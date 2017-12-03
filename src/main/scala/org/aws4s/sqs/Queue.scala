@@ -23,4 +23,7 @@ object Queue {
         }
       }
   }
+
+  def unsafeFromString(uri: String): Queue =
+    fromString(uri).fold(err => throw err, identity)
 }
