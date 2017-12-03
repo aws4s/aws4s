@@ -7,8 +7,42 @@
 ## Installation ##
 *TODO*
 
-## Example ##
-*TODO*
+## Usage Examples ##
+```scala
+
+import cats.effect.IO
+import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
+import org.aws4s.sqs._
+import org.http4s.client.blaze.PooledHttp1Client
+
+val accessKeyId = ...
+val secretAccessKey = ...
+val queueUrl = ...
+
+// Create a credentials provider
+val credentialsProvider = new AWSStaticCredentialsProvider(
+  new BasicAWSCredentials(accessKeyId, secretAccessKey)
+)
+
+// Create any http4s client
+val httpClient = PooledHttp1Client[IO]()
+
+// Create an SQS client
+val sqs = Sqs(httpClient, credentialsProvider)
+
+// Identify your SQS queue
+val q = Queue.unsafeFromString(queueUrl)
+
+// Construct and act on an action in a pure manner
+val action: IO[Unit] =
+  sqs.sendMessage(q, "Yo!", delaySeconds = Some(5)) map {
+    case Left(failure)  => println(s"Failure: $failure")
+    case Right(success) => println(s"Message sent! ID: ${success.messageId}")
+  }
+
+// At the end of the world, run your logic and excute all your effects!
+action.unsafeRunSync()
+```
 
 ## Service Support ##
 - [ ] SQS
