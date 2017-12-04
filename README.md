@@ -6,7 +6,13 @@
 > Non-blocking AWS SDK for Scala exposing strongly-typed APIs built on top of [http4s](http://http4s.org), [fs2](https://github.com/functional-streams-for-scala/fs2) and [cats](https://typelevel.org/cats/)
 
 ## Installation ##
-*TODO*
+```sbt
+resolvers += Resolver.jcenterRepo
+
+libraryDependencies ++= Seq(
+  "org.aws4s" %% "aws4s" % aws4sVersion,
+)
+```
 
 ## Usage Examples ##
 ```scala
