@@ -1,6 +1,5 @@
 package org.aws4s.sqs
 
-import cats.Monad
 import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
@@ -12,7 +11,7 @@ import cats.implicits._
 trait Command[A] {
 
   /** Produces the request for the command */
-  def request[F[_] : Monad : Effect](credentialsProvider: AWSCredentialsProvider): F[Request[F]]
+  def request[F[_] : Effect](credentialsProvider: AWSCredentialsProvider): F[Request[F]]
 
   /** Tries to decode the successful response of the command */
   def trySuccessResponse(response: scala.xml.Elem): Option[A]

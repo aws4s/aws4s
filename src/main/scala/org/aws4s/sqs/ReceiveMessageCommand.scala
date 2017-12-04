@@ -1,6 +1,5 @@
 package org.aws4s.sqs
 
-import cats.Monad
 import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
@@ -13,7 +12,7 @@ private [sqs] case class ReceiveMessageCommand(
   maxNumberOfMessages:  Option[Int]
 ) extends Command[ReceiveMessageCommand.Success] {
 
-  def request[F[_] : Monad : Effect](credentials: AWSCredentialsProvider): F[Request[F]] =
+  def request[F[_] : Effect](credentials: AWSCredentialsProvider): F[Request[F]] =
     SqsCommand.request(q, credentials)(
       Some("Action" -> "ReceiveMessage"),
       maxNumberOfMessages map ("MaxNumberOfMessages" -> _.show),
