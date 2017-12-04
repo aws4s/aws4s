@@ -19,7 +19,7 @@ scalacOptions in (Compile, doc) ++= Seq(
 
 resolvers += Resolver.jcenterRepo
 
-val http4sVersion = "0.18.0-M4"
+val http4sVersion = "0.18.0-M5"
 val awsSignerVersion = "0.5.1"
 
 libraryDependencies ++= Seq(
