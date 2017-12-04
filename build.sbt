@@ -4,7 +4,17 @@ organization := "org.aws4s"
 scalaVersion := "2.12.4"
 
 scalacOptions ++= Seq(
-  "-Ypartial-unification"
+  "-Xfatal-warnings",
+  "-Ypartial-unification",
+  "-Ywarn-unused-import",
+  "-Xlint",
+  "-feature",
+  "-deprecation",
+  "-language:postfixOps,higherKinds",
+)
+
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc
 )
 
 resolvers += Resolver.jcenterRepo
