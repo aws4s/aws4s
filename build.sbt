@@ -2,7 +2,6 @@
 name := "aws4s"
 organization := "org.aws4s"
 scalaVersion := "2.12.4"
-version      := "0.1.0-SNAPSHOT"
 
 scalacOptions ++= Seq(
   "-Ypartial-unification"
