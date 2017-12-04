@@ -1,14 +1,14 @@
 package org.aws4s
 
 import java.time.{LocalDateTime, ZoneId}
-import cats.effect.Sync
+import cats.effect.Effect
 import cats.implicits._
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.{Header, Headers, Method, Request, Uri}
 
 private [aws4s] object Signing {
 
-  def signed[F[_] : Sync](credentials: AWSCredentialsProvider, region: Region)(req: Request[F]): F[Request[F]] = {
+  def signed[F[_] : Effect](credentials: AWSCredentialsProvider, region: Region)(req: Request[F]): F[Request[F]] = {
 
     val extraHeaders: F[Headers] =
       req.body.runLog map {

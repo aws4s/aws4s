@@ -1,10 +1,10 @@
 package org.aws4s.sqs
 
-import cats.effect.Sync
+import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.client.Client
 
-class Sqs[F[_] : Sync](client: Client[F], credentials: AWSCredentialsProvider) {
+class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
   def sendMessage(
     q: Queue,
@@ -22,6 +22,6 @@ class Sqs[F[_] : Sync](client: Client[F], credentials: AWSCredentialsProvider) {
 }
 
 object Sqs {
-  def apply[F[_]: Sync](client: Client[F], aWSCredentialsProvider: AWSCredentialsProvider): Sqs[F] =
+  def apply[F[_]: Effect](client: Client[F], aWSCredentialsProvider: AWSCredentialsProvider): Sqs[F] =
     new Sqs(client, aWSCredentialsProvider)
 }

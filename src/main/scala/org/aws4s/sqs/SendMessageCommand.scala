@@ -1,11 +1,12 @@
 package org.aws4s.sqs
 
 import cats.Monad
-import cats.effect.Sync
+import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
 import cats.implicits._
 import org.aws4s.XmlParsing._
+
 import scala.xml.Elem
 
 private [sqs] case class SendMessageCommand(
@@ -15,7 +16,7 @@ private [sqs] case class SendMessageCommand(
   messageDeduplicationId: Option[MessageDeduplicationId],
 ) extends Command[SendMessageCommand.Success] {
 
-  def request[F[_] : Monad : Sync](credentials: AWSCredentialsProvider): F[Request[F]] =
+  def request[F[_] : Monad : Effect](credentials: AWSCredentialsProvider): F[Request[F]] =
     SqsCommand.request(q, credentials)(
       Some("Action" -> "SendMessage"),
       Some("MessageBody" -> this.messageBody),
