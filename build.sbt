@@ -19,23 +19,23 @@ libraryDependencies ++= Seq(
   "io.ticofab" %% "aws-request-signer"  % awsSignerVersion,
 )
 
-pomExtra := (
-  <url>https://aws4s.org</url>
-    <licenses>
-      <license>
-        <name>MIT</name>
-        <url>http://www.opensource.org/licenses/mit-license.php</url>
-        <distribution>repo</distribution>
-      </license>
-    </licenses>
-    <scm>
-      <url>git@github.com:aws4s/aws4s.git</url>
-      <connection>scm:git@github.com:aws4s/aws4s.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>amrhassan</id>
-        <name>Amr Hassan</name>
-        <url>http://amrhassan.info</url>
-      </developer>
-    </developers>)
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
+
+licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.php"))
+homepage := Some(url("https://aws4s.org"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/aws4s/aws4s"),
+    "scm:git@github.com:aws4s/aws4s.git"
+  )
+)
+developers := List(
+  Developer(id="amrhassan", name="Amr Hassan", email="amr.hassan@gmail.com", url=url("http://amrhassan.info"))
+)
