@@ -1,26 +1,44 @@
 package org.aws4s.sqs
 
-import cats.effect.Sync
+import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.client.Client
-import org.http4s.scalaxml._
-import cats.implicits._
 
-class Sqs[F[_] : Sync](client: Client[F], aWSCredentialsProvider: AWSCredentialsProvider) {
+class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
   def sendMessage(
-    q: Queue,
-    message: String,
-    delaySeconds: Option[Int] = None,
-    messageDeduplicationId: Option[MessageDeduplicationId] = None,
-  ): F[Either[Failure, SendMessageSuccess]] = {
-    val request = SendMessageCommand(message, delaySeconds, messageDeduplicationId).request[F](q, aWSCredentialsProvider)
-    client.fetchAs(request) map SendMessageCommand.extractResponse
+    q:                      Queue,
+    messageBody:            String,
+    delaySeconds:           Option[Int] = None,
+    messageDeduplicationId: Option[MessageDeduplicationId] = None
+  ): Either[Failure, F[SendMessageSuccess]] = run {
+    SendMessage(
+      q,
+      SendMessage.MessageBody(messageBody),
+      SendMessage.DelaySeconds.optional(delaySeconds),
+      SendMessage.MessageDeduplicationId.optional(messageDeduplicationId),
+    )
   }
+
+  def receiveMessage(
+    q:                      Queue,
+    maxNumberOfMessages:    Option[Int] = None,
+    visibilityTimeout:      Option[Int] = None,
+    waitTimeSeconds:        Option[Int] = None,
+  ): Either[Failure, F[ReceiveMessageSuccess]] = run {
+    ReceiveMessage(
+      q,
+      ReceiveMessage.MaxNumberOfMessages.optional(maxNumberOfMessages),
+      ReceiveMessage.VisibilityTimeout.optional(visibilityTimeout),
+      ReceiveMessage.WaitTimeSeconds.optional(waitTimeSeconds),
+    )
+  }
+
+  private def run[A](command: Command[A]): Either[Failure, F[A]] =
+    Command.run(client, credentials)(command)
 }
 
 object Sqs {
-
-  def apply[F[_]: Sync](client: Client[F], aWSCredentialsProvider: AWSCredentialsProvider): Sqs[F] =
+  def apply[F[_]: Effect](client: Client[F], aWSCredentialsProvider: AWSCredentialsProvider): Sqs[F] =
     new Sqs(client, aWSCredentialsProvider)
 }

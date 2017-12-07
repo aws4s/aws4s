@@ -40,15 +40,27 @@ val sqs = Sqs(httpClient, credentialsProvider)
 // Identify your SQS queue
 val q = Queue.unsafeFromString(queueUrl)
 
-// Construct and act on an action in a pure manner
-val action: IO[Unit] =
-  sqs.sendMessage(q, "Yo!", delaySeconds = Some(5)) map {
-    case Left(failure)  => println(s"Failure: $failure")
-    case Right(success) => println(s"Message sent! ID: ${success.messageId}")
-  }
+// Try sending a message
+val sendMessage: IO[SendMessageSuccess] =
+  sqs.sendMessage(q, "Sup", delaySeconds = Some(5))
+    .fold(throw _, identity)  // Throws on an invalid parameter(s)
 
-// At the end of the world, run your logic and excute all your effects!
-action.unsafeRunSync()
+println("Sending a message..")
+sendMessage.attempt.unsafeRunSync() match {
+  case Left(err) => System.err.println(err)
+  case Right(success) => println(success)
+}
+
+// Try receiving a few messages
+val receiveMessage: IO[ReceiveMessageSuccess] =
+  sqs.receiveMessage(q, maxNumberOfMessages = Some(3))
+    .fold(throw _, identity)  // Throws on an invalid parameter
+
+println("Polling 3 messages...")
+receiveMessage.attempt.unsafeRunSync() match {
+  case Left(err) => System.err.println(err)
+  case Right(success) => success.messages foreach println
+}
 ```
 
 ## Service Support ##

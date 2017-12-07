@@ -4,19 +4,29 @@ organization := "org.aws4s"
 scalaVersion := "2.12.4"
 
 scalacOptions ++= Seq(
-  "-Ypartial-unification"
+  "-Xfatal-warnings",
+  "-Ypartial-unification",
+  "-Ywarn-unused-import",
+  "-Xlint",
+  "-feature",
+  "-deprecation",
+  "-language:postfixOps,higherKinds",
+)
+
+scalacOptions in (Compile, doc) ++= Seq(
+  "-no-link-warnings" // Suppresses problems with Scaladoc
 )
 
 resolvers += Resolver.jcenterRepo
 
-val http4sVersion = "0.18.0-M4"
+val http4sVersion = "0.18.0-M5"
 val awsSignerVersion = "0.5.1"
 
 libraryDependencies ++= Seq(
-  "org.http4s" %% "http4s-dsl"          % http4sVersion,
-  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
-  "org.http4s" %% "http4s-scala-xml"    % http4sVersion,
-  "io.ticofab" %% "aws-request-signer"  % awsSignerVersion,
+  "org.http4s"            %% "http4s-dsl"           % http4sVersion,
+  "org.http4s"            %% "http4s-blaze-client"  % http4sVersion,
+  "org.http4s"            %% "http4s-scala-xml"     % http4sVersion,
+  "io.ticofab"            %% "aws-request-signer"   % awsSignerVersion,
 )
 
 publishTo := Some(
