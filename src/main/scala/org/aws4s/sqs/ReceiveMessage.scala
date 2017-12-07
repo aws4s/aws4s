@@ -40,4 +40,5 @@ object ReceiveMessage {
   val MaxNumberOfMessages = Param[Int]("MaxNumberOfMessages", n => if (n >= 1 && n <= 10) None else Some("not in [1,10]"))
   val VisibilityTimeout = Param[Int]("VisibilityTimeout", _ => None)
   val WaitTimeSeconds = Param[Int]("WaitTimeSeconds", _ => None)
+  val ReceiveRequestAttemptId = Param[ReceiveRequestAttemptId]("ReceiveRequestAttemptId", _ => None)
 }

@@ -23,10 +23,10 @@ val http4sVersion = "0.18.0-M5"
 val awsSignerVersion = "0.5.1"
 
 libraryDependencies ++= Seq(
-  "org.http4s" %% "http4s-dsl"          % http4sVersion,
-  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
-  "org.http4s" %% "http4s-scala-xml"    % http4sVersion,
-  "io.ticofab" %% "aws-request-signer"  % awsSignerVersion,
+  "org.http4s"            %% "http4s-dsl"           % http4sVersion,
+  "org.http4s"            %% "http4s-blaze-client"  % http4sVersion,
+  "org.http4s"            %% "http4s-scala-xml"     % http4sVersion,
+  "io.ticofab"            %% "aws-request-signer"   % awsSignerVersion,
 )
 
 publishTo := Some(

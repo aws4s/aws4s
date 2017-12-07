@@ -1,10 +1,10 @@
 package org.aws4s.sqs
 
-import cats.Show
+import cats.implicits._
 
 case class MessageDeduplicationId(value: String) extends AnyVal
 
 object MessageDeduplicationId {
-  implicit val showMessageDeduplicationId: Show[MessageDeduplicationId] =
-    Show.show(_.value)
+  implicit val paramValue: ParamValue[MessageDeduplicationId] =
+    ParamValue[String] contramap (_.value)
 }
