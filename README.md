@@ -54,7 +54,7 @@ sendMessage.attempt.unsafeRunSync() match {
 // Try receiving a few messages
 val receiveMessage: IO[ReceiveMessageSuccess] =
   sqs.receiveMessage(q, maxNumberOfMessages = Some(3))
-    .fold(throw _, identity)  // Throws on an invalid parameter
+    .fold(throw _, identity)  // Throws on an invalid parameter(s)
 
 println("Polling 3 messages...")
 receiveMessage.attempt.unsafeRunSync() match {
