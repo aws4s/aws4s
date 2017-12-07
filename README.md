@@ -7,8 +7,6 @@
 
 ## Installation ##
 ```sbt
-resolvers += Resolver.jcenterRepo
-
 libraryDependencies ++= Seq(
   "org.aws4s" %% "aws4s" % aws4sVersion,
 )

@@ -1,11 +1,13 @@
 package org.aws4s.sqs
 
+import java.time.{LocalDateTime, ZoneId}
+
 import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
-import org.aws4s.Signing
 import org.http4s.headers.Host
 import org.http4s.{Headers, Method, Request, UrlForm}
 import cats.implicits._
+import org.aws4s.{RequestSigning, Service}
 
 private [sqs] object SqsCommand {
 
@@ -15,8 +17,9 @@ private [sqs] object SqsCommand {
       validParams.collect({ case Some(x) => x }).foldLeft(UrlForm())((form, newPair) => form + newPair) +
         ("Action" -> action)
 
-    Request[F](Method.POST, q.uri, headers = Headers(Host(q.host, None)))
-      .withBody[UrlForm](body)
-      .flatMap(Signing.signed(credentials, q.region))
+    for {
+      req          <- Request[F](Method.POST, q.uri, headers = Headers(Host(q.host, None))).withBody[UrlForm](body)
+      extraHeaders <- RequestSigning(credentials, q.region, Service.Sqs, () => LocalDateTime.now(ZoneId.of("UTC"))).signedHeaders(req)
+    } yield req.withHeaders(extraHeaders)
   }
 }

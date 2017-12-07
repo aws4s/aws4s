@@ -17,16 +17,17 @@ scalacOptions in (Compile, doc) ++= Seq(
   "-no-link-warnings" // Suppresses problems with Scaladoc
 )
 
-resolvers += Resolver.jcenterRepo
-
-val http4sVersion = "0.18.0-M5"
-val awsSignerVersion = "0.5.1"
+val http4sVersion     = "0.18.0-M5"
+val awsSignerVersion  = "0.5.1"
+val awsSdkCoreVersion = "1.11.51"
+val scalatestVersion  = "3.0.4"
 
 libraryDependencies ++= Seq(
   "org.http4s"            %% "http4s-dsl"           % http4sVersion,
   "org.http4s"            %% "http4s-blaze-client"  % http4sVersion,
   "org.http4s"            %% "http4s-scala-xml"     % http4sVersion,
-  "io.ticofab"            %% "aws-request-signer"   % awsSignerVersion,
+  "com.amazonaws"         %  "aws-java-sdk-core"    % awsSdkCoreVersion,
+  "org.scalatest"         %% "scalatest"            % scalatestVersion % Test,
 )
 
 publishTo := Some(
