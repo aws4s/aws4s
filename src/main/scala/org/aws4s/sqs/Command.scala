@@ -20,10 +20,14 @@ trait Command[A] {
 object Command {
 
   /** Runs the command given an HTTP client and AWS credentials and handles the response */
-  def runCommand[F[_] : Effect, A](client: Client[F], credentials: AWSCredentialsProvider)(command: Command[A]): Either[Failure, F[Either[Failure, A]]] = {
+  def run[F[_] : Effect, A](client: Client[F], credentials: AWSCredentialsProvider)(command: Command[A]): Either[Failure, F[A]] = {
     command.request[F](credentials) map { request =>
-      client.fetchAs[scala.xml.Elem](request) map { response =>
-        command.trySuccessResponse(response).toRight(Failure.tryErrorResponse(response).getOrElse(Failure.unexpectedResponse(response)))
+      client.fetchAs[scala.xml.Elem](request) flatMap { response =>
+        val either = command.trySuccessResponse(response).toRight(Failure.tryErrorResponse(response).getOrElse(Failure.unexpectedResponse(response)))
+        either match {
+          case Left(err) => (err: Throwable).raiseError[F, A]
+          case Right(a) => a.pure[F]
+        }
       }
     }
   }

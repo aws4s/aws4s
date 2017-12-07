@@ -9,9 +9,9 @@ class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider)
   def sendMessage(
     q:                      Queue,
     messageBody:            String,
-    delaySeconds:           Option[Int],
-    messageDeduplicationId: Option[MessageDeduplicationId]
-  ): Either[Failure, F[Either[Failure, SendMessage.Success]]] = run {
+    delaySeconds:           Option[Int] = None,
+    messageDeduplicationId: Option[MessageDeduplicationId] = None
+  ): Either[Failure, F[SendMessageSuccess]] = run {
     SendMessage(
       q,
       SendMessage.MessageBody(messageBody),
@@ -22,10 +22,10 @@ class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider)
 
   def receiveMessage(
     q:                      Queue,
-    maxNumberOfMessages:    Option[Int],
-    visibilityTimeout:      Option[Int],
-    waitTimeSeconds:        Option[Int],
-  ): Either[Failure, F[Either[Failure, ReceiveMessage.Success]]] = run {
+    maxNumberOfMessages:    Option[Int] = None,
+    visibilityTimeout:      Option[Int] = None,
+    waitTimeSeconds:        Option[Int] = None,
+  ): Either[Failure, F[ReceiveMessageSuccess]] = run {
     ReceiveMessage(
       q,
       ReceiveMessage.MaxNumberOfMessages.optional(maxNumberOfMessages),
@@ -34,8 +34,8 @@ class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider)
     )
   }
 
-  private def run[A](command: Command[A]): Either[Failure, F[Either[Failure, A]]] =
-    Command.runCommand(client, credentials)(command)
+  private def run[A](command: Command[A]): Either[Failure, F[A]] =
+    Command.run(client, credentials)(command)
 }
 
 object Sqs {

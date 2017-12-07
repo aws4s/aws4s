@@ -11,7 +11,7 @@ private [sqs] case class ReceiveMessage(
   maxNumberOfMessages:  ReceiveMessage.MaxNumberOfMessages.Validated = ReceiveMessage.MaxNumberOfMessages.empty,
   visibilityTimeout:    ReceiveMessage.VisibilityTimeout.Validated = ReceiveMessage.VisibilityTimeout.empty,
   waitTimeSeconds:      ReceiveMessage.WaitTimeSeconds.Validated = ReceiveMessage.WaitTimeSeconds.empty,
-) extends Command[ReceiveMessage.Success] {
+) extends Command[ReceiveMessageSuccess] {
 
   def request[F[_] : Effect](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
     val params = List(
@@ -24,21 +24,21 @@ private [sqs] case class ReceiveMessage(
     }
   }
 
-  def trySuccessResponse(response: Elem): Option[ReceiveMessage.Success] =
+  def trySuccessResponse(response: Elem): Option[ReceiveMessageSuccess] =
     if (response.label == "ReceiveMessageResponse")
-      Some(ReceiveMessage.Success(
+      Some(ReceiveMessageSuccess(
         (response \ "ReceiveMessageResult" \ "Message").toList.flatMap(node => Message.parse(node).toList),
       ))
     else None
 }
 
-object ReceiveMessage {
-  case class Success(
-    messages: List[Message]
-  )
-
+private [sqs] object ReceiveMessage {
   val MaxNumberOfMessages = Param[Int]("MaxNumberOfMessages", n => if (n >= 1 && n <= 10) None else Some("not in [1,10]"))
   val VisibilityTimeout = Param[Int]("VisibilityTimeout", _ => None)
   val WaitTimeSeconds = Param[Int]("WaitTimeSeconds", _ => None)
   val ReceiveRequestAttemptId = Param[ReceiveRequestAttemptId]("ReceiveRequestAttemptId", _ => None)
 }
+
+case class ReceiveMessageSuccess(
+  messages: List[Message]
+)
