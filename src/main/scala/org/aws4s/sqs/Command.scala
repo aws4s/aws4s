@@ -11,7 +11,7 @@ import cats.implicits._
 trait Command[A] {
 
   /** Produces the request for the command */
-  def request[F[_] : Effect](credentialsProvider: AWSCredentialsProvider): F[Request[F]]
+  def request[F[_] : Effect](credentialsProvider: AWSCredentialsProvider): Either[Failure, F[Request[F]]]
 
   /** Tries to decode the successful response of the command */
   def trySuccessResponse(response: scala.xml.Elem): Option[A]
@@ -20,10 +20,11 @@ trait Command[A] {
 object Command {
 
   /** Runs the command given an HTTP client and AWS credentials and handles the response */
-  def runCommand[F[_] : Effect, A](client: Client[F], credentials: AWSCredentialsProvider)(command: Command[A]): F[Either[Failure, A]] = {
-    val request = command.request[F](credentials)
-    client.fetchAs[scala.xml.Elem](request) map { response =>
-      command.trySuccessResponse(response).toRight(Failure.tryErrorResponse(response).getOrElse(Failure.unexpectedResponse(response)))
+  def runCommand[F[_] : Effect, A](client: Client[F], credentials: AWSCredentialsProvider)(command: Command[A]): Either[Failure, F[Either[Failure, A]]] = {
+    command.request[F](credentials) map { request =>
+      client.fetchAs[scala.xml.Elem](request) map { response =>
+        command.trySuccessResponse(response).toRight(Failure.tryErrorResponse(response).getOrElse(Failure.unexpectedResponse(response)))
+      }
     }
   }
 }

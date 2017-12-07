@@ -10,8 +10,10 @@ import cats.implicits._
 private [sqs] object SqsCommand {
 
   /** Builds the request for an SQS command */
-  def request[F[_]: Effect](q: Queue, credentials: AWSCredentialsProvider)(params: Option[(String, String)]*): F[Request[F]] = {
-    val body = params.collect({ case Some(x) => x }).foldLeft(UrlForm())((form, newPair) => form + newPair)
+  def request[F[_]: Effect](q: Queue, credentials: AWSCredentialsProvider, action: String, validParams: List[Option[(String, String)]]): F[Request[F]] = {
+    val body =
+      validParams.collect({ case Some(x) => x }).foldLeft(UrlForm())((form, newPair) => form + newPair) +
+        ("Action" -> action)
 
     Request[F](Method.POST, q.uri, headers = Headers(Host(q.host, None)))
       .withBody[UrlForm](body)
