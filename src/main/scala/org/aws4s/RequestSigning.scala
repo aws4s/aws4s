@@ -22,12 +22,6 @@ import org.http4s.headers.{Authorization, Date}
   */
 object RequestSigning {
 
-  def apply(credentialsProvider: AWSCredentialsProvider,
-            region: Region,
-            service: Service,
-            payloadSigning: PayloadSigning,
-            clock: () => LocalDateTime) = new RequestSigning(credentialsProvider, region, service, payloadSigning, clock)
-
   private def sha256[F[_]: Effect](payload: Stream[F, Byte]): F[Array[Byte]] =
       payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
 
@@ -85,7 +79,7 @@ object RequestSigning {
   }
 }
 
-class RequestSigning(
+case class RequestSigning(
   credentialsProvider: AWSCredentialsProvider,
   region: Region,
   service: Service,

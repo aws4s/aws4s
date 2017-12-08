@@ -5,7 +5,7 @@ import com.amazonaws.auth.AWSCredentialsProvider
 import org.aws4s._
 import org.http4s.client.Client
 
-class S3[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
+case class S3[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
   def listBuckets(region: Region): Either[Failure, F[ListBucketsSuccess]] = run {
     ListBucketsCommand(region)
@@ -13,9 +13,4 @@ class S3[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
   private def run[A](command: Command[A]): Either[Failure, F[A]] =
     command.run(client, credentials)
-}
-
-object S3 {
-
-  def apply[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider): S3[F] = new S3(client, credentials)
 }
