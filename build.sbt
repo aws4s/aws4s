@@ -17,6 +17,8 @@ scalacOptions in (Compile, doc) ++= Seq(
   "-no-link-warnings" // Suppresses problems with Scaladoc
 )
 
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+
 val http4sVersion     = "0.18.0-M5"
 val awsSignerVersion  = "0.5.1"
 val awsSdkCoreVersion = "1.11.51"

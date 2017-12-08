@@ -12,6 +12,7 @@ import cats.effect.Effect
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, AWSSessionCredentials}
 import org.http4s.{Header, Headers, Method, Request, Uri}
 import fs2.Stream
+import org.aws4s.s3.PayloadSigning
 import org.http4s.headers.{Authorization, Date}
 
 
@@ -24,7 +25,8 @@ object RequestSigning {
   def apply(credentialsProvider: AWSCredentialsProvider,
             region: Region,
             service: Service,
-            clock: () => LocalDateTime) = new RequestSigning(credentialsProvider, region, service, clock)
+            payloadSigning: PayloadSigning,
+            clock: () => LocalDateTime) = new RequestSigning(credentialsProvider, region, service, payloadSigning, clock)
 
   private def sha256[F[_]: Effect](payload: Stream[F, Byte]): F[Array[Byte]] =
       payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
@@ -66,6 +68,9 @@ object RequestSigning {
   private def xAmzSecurityTokenHeader(tokenValue: String): Header =
     Header("x-amz-security-token", tokenValue)
 
+  private def xAmzContentSha256(digest: String): Header =
+    Header("x-amz-content-sha256", digest)
+
   private def sign(stringToSign: String, now: LocalDateTime, credentials: AWSCredentials, region: Region, service: Service): String = {
 
     val key: Array[Byte] = {
@@ -80,7 +85,13 @@ object RequestSigning {
   }
 }
 
-class RequestSigning(credentialsProvider: AWSCredentialsProvider, region: Region, service: Service, clock: () => LocalDateTime) {
+class RequestSigning(
+  credentialsProvider: AWSCredentialsProvider,
+  region: Region,
+  service: Service,
+  payloadSigning: PayloadSigning,
+  clock: () => LocalDateTime
+) {
 
   import RequestSigning._
 
@@ -108,9 +119,15 @@ class RequestSigning(credentialsProvider: AWSCredentialsProvider, region: Region
 
     val signedHeaders = headers ++ extraDateHeaders ++ extraSecurityHeaders
 
-    val signedHeaderKeys = signedHeaders.toList.map(_.name.value.toLowerCase).mkString(";")
+    val signedHeaderKeys = signedHeaders.toList.map(_.name.value.toLowerCase).sorted.mkString(";")
 
-    sha256(payload) map { payloadHash =>
+    val sha256Payload: F[Array[Byte]] =
+      payloadSigning match {
+        case PayloadSigning.Unsigned => sha256("UNSIGNED-PAYLOAD".getBytes(StandardCharsets.UTF_8)).pure[F]
+        case PayloadSigning.Signed   => sha256(payload)
+      }
+
+    sha256Payload map { payloadHash =>
 
       val canonicalRequest =
         List(
@@ -145,7 +162,16 @@ class RequestSigning(credentialsProvider: AWSCredentialsProvider, region: Region
         ", SignedHeaders=" + signedHeaderKeys +
         ", Signature=" + signature
 
-      signedHeaders ++ Headers(Header(Authorization.name.value, authorizationHeaderValue))
+      val payloadChecksumHeader: Header =
+        payloadSigning match {
+          case PayloadSigning.Unsigned => xAmzContentSha256("UNSIGNED-PAYLOAD")
+          case PayloadSigning.Signed   => xAmzContentSha256(base16(payloadHash))
+        }
+
+      signedHeaders.put(
+        Header(Authorization.name.value, authorizationHeaderValue),
+        payloadChecksumHeader,
+      )
     }
   }
 }

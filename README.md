@@ -19,6 +19,7 @@ import cats.effect.IO
 import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import org.aws4s.sqs._
 import org.http4s.client.blaze.PooledHttp1Client
+import org.aws4s.Region
 
 val accessKeyId = ...
 val secretAccessKey = ...
@@ -59,9 +60,23 @@ receiveMessage.attempt.unsafeRunSync() match {
   case Left(err) => System.err.println(err)
   case Right(success) => success.messages foreach println
 }
+
+// Create an S3 client
+println("Listing my s3 buckets...")
+val s3 = S3(httpClient, credentialsProvider)
+
+// List own buckets
+val listBuckets: IO[ListBucketsSuccess] =
+  s3.listBuckets(Region.`eu-central-1`)
+      .fold(throw _, identity) // Throws on invalid parameter(s)
+
+listBuckets.attempt.unsafeRunSync() match {
+  case Left(err) => System.err.println(err)
+  case Right(success) => success.buckets foreach println
+}
 ```
 
 ## Service Support ##
-- [ ] SQS
-- [ ] S3
+- [x] SQS
+- [x] S3
 - [ ] DynamoDB
