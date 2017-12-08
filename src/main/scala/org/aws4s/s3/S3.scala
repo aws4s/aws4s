@@ -7,10 +7,10 @@ import org.http4s.client.Client
 
 case class S3[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
-  def listBuckets(region: Region): Either[Failure, F[ListBucketsSuccess]] = run {
-    ListBucketsCommand(region)
+  val listBuckets: F[ListBucketsSuccess] = runParamless {
+    ListBucketsCommand
   }
 
-  private def run[A](command: Command[A]): Either[Failure, F[A]] =
+  private def runParamless[A](command: ParamlessCommand[A]): F[A] =
     command.run(client, credentials)
 }

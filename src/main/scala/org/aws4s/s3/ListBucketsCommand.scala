@@ -8,16 +8,16 @@ import org.http4s.{Headers, Method, Request, Uri}
 import cats.implicits._
 import scala.xml.Elem
 
-private [s3] case class ListBucketsCommand(region: Region) extends Command[ListBucketsSuccess] {
+private [s3] object ListBucketsCommand extends ParamlessCommand[ListBucketsSuccess] {
 
-  def request[F[_]: Sync](credentialsProvider: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  private val region = Region.`eu-central-1`  // Any region would work the same!
+
+  def request[F[_]: Sync](credentialsProvider: AWSCredentialsProvider): F[Request[F]] = {
     val host = s"s3-${region.name}.amazonaws.com"
     val req = Request[F](Method.GET, Uri.unsafeFromString(s"https://$host/"), headers = Headers(Host(host)))
     val signing = RequestSigning(credentialsProvider, region, Service.s3, PayloadSigning.Signed, Clock.utc)
-    Either.right {
-      signing.signedHeaders(req) map { authHeaders =>
-        req.withHeaders(authHeaders)
-      }
+    signing.signedHeaders(req) map { authHeaders =>
+      req.withHeaders(authHeaders)
     }
   }
 
