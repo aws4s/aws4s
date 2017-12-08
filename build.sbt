@@ -19,7 +19,7 @@ scalacOptions in (Compile, doc) ++= Seq(
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
-val http4sVersion     = "0.18.0-M5"
+val http4sVersion     = "0.18.0-M6"
 val awsSignerVersion  = "0.5.1"
 val awsSdkCoreVersion = "1.11.51"
 val scalatestVersion  = "3.0.4"
