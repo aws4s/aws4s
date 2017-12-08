@@ -1,6 +1,6 @@
 package org.aws4s.sqs
 
-import cats.effect.Effect
+import cats.effect.Sync
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
 import cats.implicits._
@@ -14,7 +14,7 @@ private [sqs] case class ReceiveMessage(
   waitTimeSeconds:      ReceiveMessage.WaitTimeSeconds.Validated = ReceiveMessage.WaitTimeSeconds.empty,
 ) extends Command[ReceiveMessageSuccess] {
 
-  def request[F[_] : Effect](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  def request[F[_]: Sync](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
     val params = List(
       maxNumberOfMessages.render,
       visibilityTimeout.render,

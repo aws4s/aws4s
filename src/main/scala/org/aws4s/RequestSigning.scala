@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import cats.implicits._
-import cats.effect.Effect
+import cats.effect.Sync
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, AWSSessionCredentials}
 import org.http4s.{Header, Headers, Method, Request, Uri}
 import fs2.Stream
@@ -22,7 +22,7 @@ import org.http4s.headers.{Authorization, Date}
   */
 object RequestSigning {
 
-  private def sha256[F[_]: Effect](payload: Stream[F, Byte]): F[Array[Byte]] =
+  private def sha256[F[_]: Sync](payload: Stream[F, Byte]): F[Array[Byte]] =
       payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
 
   private def sha256(payload: Array[Byte]): Array[Byte] = {
@@ -89,10 +89,10 @@ case class RequestSigning(
 
   import RequestSigning._
 
-  def signedHeaders[F[_]: Effect](req: Request[F]): F[Headers] =
+  def signedHeaders[F[_]: Sync](req: Request[F]): F[Headers] =
     signedHeaders(req.uri.path, req.method, req.params, req.headers, req.body)
 
-  def signedHeaders[F[_]: Effect](path: Uri.Path,
+  def signedHeaders[F[_]: Sync](path: Uri.Path,
                        method: Method,
                        queryParams: Map[String, String],
                        headers: Headers,

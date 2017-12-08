@@ -5,7 +5,7 @@ import com.amazonaws.auth.AWSCredentialsProvider
 import org.aws4s.{Command, Failure}
 import org.http4s.client.Client
 
-case class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider) {
+case class Sqs[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
 
   def sendMessage(
     q:                      Queue,

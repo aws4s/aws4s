@@ -1,6 +1,6 @@
 package org.aws4s.s3
 
-import cats.effect.Effect
+import cats.effect.Sync
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.aws4s._
 import org.http4s.headers.Host
@@ -10,7 +10,7 @@ import scala.xml.Elem
 
 private [s3] case class ListBucketsCommand(region: Region) extends Command[ListBucketsSuccess] {
 
-  def request[F[_] : Effect](credentialsProvider: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  def request[F[_]: Sync](credentialsProvider: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
     val host = s"s3-${region.name}.amazonaws.com"
     val req = Request[F](Method.GET, Uri.unsafeFromString(s"https://$host/"), headers = Headers(Host(host)))
     val signing = RequestSigning(credentialsProvider, region, Service.s3, PayloadSigning.Signed, Clock.utc)
