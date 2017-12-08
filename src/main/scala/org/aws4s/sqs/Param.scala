@@ -1,6 +1,7 @@
 package org.aws4s.sqs
 
 import cats.implicits._
+import org.aws4s.Failure
 
 /** A parameter for an SQS command
   *

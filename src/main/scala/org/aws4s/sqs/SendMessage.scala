@@ -4,6 +4,7 @@ import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
 import cats.implicits._
+import org.aws4s.{Command, Failure}
 import org.aws4s.XmlParsing._
 import scala.xml.Elem
 

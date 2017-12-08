@@ -4,6 +4,7 @@ import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.Request
 import cats.implicits._
+import org.aws4s.{Command, Failure}
 import scala.xml.Elem
 
 private [sqs] case class ReceiveMessage(
@@ -26,9 +27,9 @@ private [sqs] case class ReceiveMessage(
 
   def trySuccessResponse(response: Elem): Option[ReceiveMessageSuccess] =
     if (response.label == "ReceiveMessageResponse")
-      Some(ReceiveMessageSuccess(
-        (response \ "ReceiveMessageResult" \ "Message").toList.flatMap(node => Message.parse(node).toList),
-      ))
+      (response \ "ReceiveMessageResult" \ "Message").toList.traverse(Message.parse) map {
+        messages => ReceiveMessageSuccess(messages)
+      }
     else None
 }
 

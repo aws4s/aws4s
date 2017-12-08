@@ -2,6 +2,7 @@ package org.aws4s.sqs
 
 import cats.effect.Effect
 import com.amazonaws.auth.AWSCredentialsProvider
+import org.aws4s.{Command, Failure}
 import org.http4s.client.Client
 
 class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider) {
@@ -35,7 +36,7 @@ class Sqs[F[_] : Effect](client: Client[F], credentials: AWSCredentialsProvider)
   }
 
   private def run[A](command: Command[A]): Either[Failure, F[A]] =
-    Command.run(client, credentials)(command)
+    command.run(client, credentials)
 }
 
 object Sqs {
