@@ -13,6 +13,14 @@ libraryDependencies ++= Seq(
 )
 ```
 
+## Service Support ##
+- SQS:
+  - `sendMessage`
+  - `receiveMessage`
+- S3:
+  - `listBuckets`
+  - `putObject`
+
 ## Usage Examples ##
 ```scala
 
@@ -77,7 +85,4 @@ listBuckets.attempt.unsafeRunSync() match {
 }
 ```
 
-## Service Support ##
-- [x] SQS
-- [x] S3
-- [ ] DynamoDB
+
