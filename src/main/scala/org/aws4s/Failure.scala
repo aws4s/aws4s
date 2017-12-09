@@ -2,6 +2,7 @@ package org.aws4s
 
 import cats.Show
 import cats.implicits._
+import org.http4s.{Headers, Status}
 
 abstract class Failure(message: String) extends RuntimeException(message) {
   override def toString: String = this.show
@@ -35,6 +36,18 @@ object Failure {
     else
       None
 
-  def unexpectedResponse(content: xml.Elem): Failure = UnexpectedResponse(content.toString)
+  def unexpectedResponse(content: String): Failure = UnexpectedResponse(content)
+
+  def badResponse(status: Status, headers: Headers, responseContent: ResponseContent): Failure = {
+    def preambled(strBody: String) = status.show |+| "\n" |+| headers.show |+| "\n\n" |+| strBody
+    responseContent match {
+      case XmlContent(elem) => tryErrorResponse(elem).getOrElse(unexpectedResponse(preambled(elem.toString)))
+      case StringContent(text) => unexpectedResponse(preambled(text))
+      case NoContent => unexpectedResponse(preambled("[No content]"))
+    }
+  }
+
   def invalidParam(paramName: String, cause: String): Failure = InvalidParam(s"$paramName is invalid because $cause")
+
+  private implicit val showStatus: Show[Status] = Show.fromToString
 }

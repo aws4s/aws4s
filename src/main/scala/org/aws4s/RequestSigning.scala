@@ -62,8 +62,8 @@ object RequestSigning {
   private def xAmzSecurityTokenHeader(tokenValue: String): Header =
     Header("x-amz-security-token", tokenValue)
 
-  private def xAmzContentSha256(digest: String): Header =
-    Header("x-amz-content-sha256", digest)
+  private def xAmzContentSha256(content: String): Header =
+    Header("x-amz-content-sha256", content)
 
   private def sign(stringToSign: String, now: LocalDateTime, credentials: AWSCredentials, region: Region, service: Service): String = {
 
@@ -115,10 +115,10 @@ case class RequestSigning(
 
     val signedHeaderKeys = signedHeaders.toList.map(_.name.value.toLowerCase).sorted.mkString(";")
 
-    val sha256Payload: F[Array[Byte]] =
+    val sha256Payload: F[String] =
       payloadSigning match {
-        case PayloadSigning.Unsigned => sha256("UNSIGNED-PAYLOAD".getBytes(StandardCharsets.UTF_8)).pure[F]
-        case PayloadSigning.Signed   => sha256(payload)
+        case PayloadSigning.Unsigned => "UNSIGNED-PAYLOAD".pure[F]
+        case PayloadSigning.Signed   => sha256(payload) map base16
       }
 
     sha256Payload map { payloadHash =>
@@ -130,7 +130,7 @@ case class RequestSigning(
           renderCanonicalQueryString(queryParams),
           renderCanonicalHeaders(signedHeaders),
           signedHeaderKeys,
-          base16(payloadHash),
+          payloadHash,
         ).mkString("\n")
 
       val credentialScope: String =
@@ -159,7 +159,7 @@ case class RequestSigning(
       val payloadChecksumHeader: Header =
         payloadSigning match {
           case PayloadSigning.Unsigned => xAmzContentSha256("UNSIGNED-PAYLOAD")
-          case PayloadSigning.Signed   => xAmzContentSha256(base16(payloadHash))
+          case PayloadSigning.Signed   => xAmzContentSha256(payloadHash)
         }
 
       signedHeaders.put(

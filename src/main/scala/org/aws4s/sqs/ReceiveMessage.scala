@@ -2,10 +2,9 @@ package org.aws4s.sqs
 
 import cats.effect.Sync
 import com.amazonaws.auth.AWSCredentialsProvider
-import org.http4s.Request
+import org.http4s.{Request, Status}
 import cats.implicits._
-import org.aws4s.{Command, Failure}
-import scala.xml.Elem
+import org.aws4s.{Command, Failure, ResponseContent, XmlContent}
 
 private [sqs] case class ReceiveMessage(
   q:                    Queue,
@@ -14,7 +13,7 @@ private [sqs] case class ReceiveMessage(
   waitTimeSeconds:      ReceiveMessage.WaitTimeSeconds.Validated = ReceiveMessage.WaitTimeSeconds.empty,
 ) extends Command[ReceiveMessageSuccess] {
 
-  def request[F[_]: Sync](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  override def request[F[_]: Sync](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
     val params = List(
       maxNumberOfMessages.render,
       visibilityTimeout.render,
@@ -25,12 +24,17 @@ private [sqs] case class ReceiveMessage(
     }
   }
 
-  def trySuccessResponse(response: Elem): Option[ReceiveMessageSuccess] =
-    if (response.label == "ReceiveMessageResponse")
-      (response \ "ReceiveMessageResult" \ "Message").toList.traverse(Message.parse) map {
-        messages => ReceiveMessageSuccess(messages)
-      }
-    else None
+  override def successStatus: Status = Status.Ok
+
+  override def trySuccessResponse(response: ResponseContent): Option[ReceiveMessageSuccess] =
+    response tryParse {
+      case XmlContent(elem) =>
+        if (elem.label == "ReceiveMessageResponse")
+          (elem \ "ReceiveMessageResult" \ "Message").toList.traverse(Message.parse) map {
+            messages => ReceiveMessageSuccess(messages)
+          }
+        else None
+    }
 }
 
 private [sqs] object ReceiveMessage {
