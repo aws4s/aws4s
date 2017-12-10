@@ -8,9 +8,8 @@ import fs2.Stream
 
 case class S3[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
 
-  val listBuckets: F[ListBucketsSuccess] = runParamless {
-    ListBucketsCommand()
-  }
+  val listBuckets: F[ListBucketsSuccess] =
+    ListBucketsCommand().run(client, credentials)
 
   def putObject(
     region: Region,
@@ -18,18 +17,20 @@ case class S3[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
     name: Uri.Path,
     obj: Stream[F, Byte],
     payloadSigning: PayloadSigning
-  ): F[Unit] = runParamless {
-    PutObject(region, bucket, name, obj, payloadSigning)
-  }
+  ): F[Unit] =
+    PutObject(region, bucket, name, obj, payloadSigning).run(client, credentials)
 
   def deleteObject(
     region: Region,
     bucket: Bucket,
     name: Uri.Path
-  ): F[Unit] = runParamless {
-    DeleteObject(region, bucket, name)
-  }
+  ): F[Unit] =
+    DeleteObject(region, bucket, name).run(client, credentials)
 
-  private def runParamless[A](command: ParamlessCommand[F, A]): F[A] =
-    command.run(client, credentials)
+  def getObject(
+    region: Region,
+    bucket: Bucket,
+    name: Uri.Path
+  ): F[Stream[F, Byte]] =
+    GetObject(region, bucket, name).run(client, credentials)
 }
