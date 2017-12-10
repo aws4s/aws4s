@@ -18,7 +18,7 @@ import org.http4s.headers.{Authorization, Date}
   * Based on https://github.com/ticofab/aws-request-signer,
   * inspired by: https://github.com/inreachventures/aws-signing-request-interceptor
   */
-object RequestSigning {
+private [aws4s] object RequestSigning {
 
   private def sha256[F[_]: Sync](payload: Stream[F, Byte]): F[Array[Byte]] =
       payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
@@ -77,7 +77,7 @@ object RequestSigning {
   }
 }
 
-case class RequestSigning(
+private [aws4s] case class RequestSigning(
   credentials: () => Credentials,
   region: Region,
   service: Service,
