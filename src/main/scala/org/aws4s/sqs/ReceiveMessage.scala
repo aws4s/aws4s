@@ -1,10 +1,9 @@
 package org.aws4s.sqs
 
 import cats.effect.Sync
-import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.{Request, Status}
 import cats.implicits._
-import org.aws4s.{Command, Failure, ResponseContent, XmlContent}
+import org.aws4s._
 
 private [sqs] case class ReceiveMessage(
   q:                    Queue,
@@ -13,7 +12,7 @@ private [sqs] case class ReceiveMessage(
   waitTimeSeconds:      ReceiveMessage.WaitTimeSeconds.Validated = ReceiveMessage.WaitTimeSeconds.empty,
 ) extends Command[ReceiveMessageSuccess] {
 
-  override def request[F[_]: Sync](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  override def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]] = {
     val params = List(
       maxNumberOfMessages.render,
       visibilityTimeout.render,

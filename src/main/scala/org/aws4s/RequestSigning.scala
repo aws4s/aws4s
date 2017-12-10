@@ -9,12 +9,10 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import cats.implicits._
 import cats.effect.Sync
-import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider, AWSSessionCredentials}
 import org.http4s.{Header, Headers, Method, Request, Uri}
 import fs2.Stream
 import org.aws4s.s3.PayloadSigning
 import org.http4s.headers.{Authorization, Date}
-
 
 /**
   * Based on https://github.com/ticofab/aws-request-signer,
@@ -65,10 +63,10 @@ object RequestSigning {
   private def xAmzContentSha256(content: String): Header =
     Header("x-amz-content-sha256", content)
 
-  private def sign(stringToSign: String, now: LocalDateTime, credentials: AWSCredentials, region: Region, service: Service): String = {
+  private def sign(stringToSign: String, now: LocalDateTime, credentials: Credentials, region: Region, service: Service): String = {
 
     val key: Array[Byte] = {
-      val kSecret: Array[Byte] = ("AWS4" + credentials.getAWSSecretKey).getBytes(StandardCharsets.UTF_8)
+      val kSecret: Array[Byte] = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
       val kDate: Array[Byte] = hmacSha256(now.format(DateTimeFormatter.BASIC_ISO_DATE), kSecret)
       val kRegion: Array[Byte] = hmacSha256(region.name, kDate)
       val kService: Array[Byte] = hmacSha256(service.name, kRegion)
@@ -80,7 +78,7 @@ object RequestSigning {
 }
 
 case class RequestSigning(
-  credentialsProvider: AWSCredentialsProvider,
+  credentials: () => Credentials,
   region: Region,
   service: Service,
   payloadSigning: PayloadSigning,
@@ -99,14 +97,10 @@ case class RequestSigning(
                        payload: Stream[F, Byte]): F[Headers] = {
 
     val now: LocalDateTime = clock()
-
-    val credentials: AWSCredentials = credentialsProvider.getCredentials
+    val credentialsNow = credentials()
 
     val extraSecurityHeaders: Headers =
-      credentials match {
-        case asc: AWSSessionCredentials => Headers(xAmzSecurityTokenHeader(asc.getSessionToken))
-        case _ => Headers()
-      }
+      Headers(credentialsNow.sessionToken.toList map xAmzSecurityTokenHeader)
 
     val extraDateHeaders: Headers =
       if (!headers.iterator.exists(_.name == Date.name)) Headers(xAmzDateHeader(now)) else Headers()
@@ -148,11 +142,11 @@ case class RequestSigning(
           base16(sha256(canonicalRequest.getBytes(StandardCharsets.UTF_8)))
         ).mkString("\n")
 
-      val signature = sign(stringToSign, now, credentials, region, service)
+      val signature = sign(stringToSign, now, credentialsNow, region, service)
 
       val authorizationHeaderValue =
         "AWS4-HMAC-SHA256 Credential=" +
-        credentials.getAWSAccessKeyId + "/" + credentialScope +
+        credentialsNow.accessKey + "/" + credentialScope +
         ", SignedHeaders=" + signedHeaderKeys +
         ", Signature=" + signature
 

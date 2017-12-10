@@ -25,11 +25,10 @@ val awsSdkCoreVersion = "1.11.51"
 val scalatestVersion  = "3.0.4"
 
 libraryDependencies ++= Seq(
-  "org.http4s"            %% "http4s-dsl"           % http4sVersion,
-  "org.http4s"            %% "http4s-blaze-client"  % http4sVersion,
-  "org.http4s"            %% "http4s-scala-xml"     % http4sVersion,
-  "com.amazonaws"         %  "aws-java-sdk-core"    % awsSdkCoreVersion,
-  "org.scalatest"         %% "scalatest"            % scalatestVersion % Test,
+  "org.http4s"     %% "http4s-dsl"           % http4sVersion,
+  "org.http4s"     %% "http4s-blaze-client"  % http4sVersion,
+  "org.http4s"     %% "http4s-scala-xml"     % http4sVersion,
+  "org.scalatest"  %% "scalatest"            % scalatestVersion % Test,
 )
 
 publishTo := Some(

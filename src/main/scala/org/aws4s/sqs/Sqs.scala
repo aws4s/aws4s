@@ -1,11 +1,10 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import com.amazonaws.auth.AWSCredentialsProvider
-import org.aws4s.{Command, Failure}
+import org.aws4s.{Command, Credentials, Failure}
 import org.http4s.client.Client
 
-case class Sqs[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
+case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
 
   def sendMessage(
     q:                      Queue,
