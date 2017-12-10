@@ -1,7 +1,7 @@
 package org.aws4s.sqs
 
 import cats.effect.Sync
-import org.http4s.{Request, Status}
+import org.http4s.Request
 import cats.implicits._
 import org.aws4s._
 
@@ -22,8 +22,6 @@ private [sqs] case class ReceiveMessage(
       SqsCommand.request(q, credentials, "ReceiveMessage", validParams)
     }
   }
-
-  override def successStatus: Status = Status.Ok
 
   override def trySuccessResponse(response: ResponseContent): Option[ReceiveMessageSuccess] =
     response tryParse {

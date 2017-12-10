@@ -2,7 +2,7 @@ package org.aws4s.s3
 
 import cats.effect.Effect
 import org.aws4s._
-import org.http4s.{Headers, Method, Request, Status, Uri}
+import org.http4s.{Headers, Method, Request, Uri}
 import fs2.Stream
 import org.http4s.headers.Host
 import cats.implicits._
@@ -17,8 +17,6 @@ private [aws4s] case class PutObject[F[_]: Effect](region: Region, bucket: Bucke
       req.withHeaders(authHeaders)
     }
   }
-
-  override def successStatus: Status = Status.Ok
 
   override def trySuccessResponse(response: ResponseContent): Option[Unit] =
     response tryParse {

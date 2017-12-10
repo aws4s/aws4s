@@ -1,7 +1,7 @@
 package org.aws4s
 
 import cats.effect.Effect
-import org.http4s.{Request, Status}
+import org.http4s.Request
 import org.http4s.client.Client
 import cats.implicits._
 
@@ -14,13 +14,11 @@ private [aws4s] abstract class ParamlessCommand[F[_]: Effect, A] {
   /** Tries to decode the successful response of the command */
   def trySuccessResponse(response: ResponseContent): Option[A]
 
-  def successStatus: Status
-
   /** Runs the command given an HTTP client and AWS credentials and handles the response */
   final def run(client: Client[F], credentials: () => Credentials): F[A] =
     client.fetch(request(credentials)) { resp =>
       resp.as[ResponseContent] flatMap { content =>
-        if (resp.status == successStatus) {
+        if (resp.status.isSuccess) {
           trySuccessResponse(content) match {
             case Some(a) => a.pure[F]
             case None => (Failure.badResponse(resp.status, resp.headers, content): Throwable).raiseError[F, A]
