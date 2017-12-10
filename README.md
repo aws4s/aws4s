@@ -37,7 +37,6 @@ val sqs = Sqs(httpClient, credentials)
 val queueUrl = "https://sqs.eu-central-1.amazonaws.com/FAKE_QUEUE_URL"
 val q = Queue.unsafeFromString(queueUrl)
 
-println("Sending a message..")
 val action: IO[Unit] =
   sqs.sendMessage(q, "Yo!", delaySeconds = Some(5))
     .attempt
@@ -47,6 +46,7 @@ val action: IO[Unit] =
     }
 
 // Run final action to produce effects
+println("Sending a message..")
 action.unsafeRunSync()
 ```
 
