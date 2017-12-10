@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
 - SQS:
   - `sendMessage`
   - `receiveMessage`
+  - `deleteMessage`
 - S3:
   - `listBuckets`
   - `putObject`

@@ -37,6 +37,16 @@ case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) 
     )
   }
 
+  def deleteMessage(
+    q:             Queue,
+    receiptHandle: ReceiptHandle,
+  ): F[Unit] = run {
+    DeleteMessage(
+      q,
+      DeleteMessage.ReceiptHandleParam(receiptHandle),
+    )
+  }
+
   private def run[A: EntityDecoder[F, ?]](command: Command[F, A]): F[A] =
     command.run(client, credentials)
 }
