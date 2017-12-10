@@ -3,7 +3,7 @@ package org.aws4s.s3
 import cats.effect.Effect
 import org.aws4s._
 import org.http4s.headers.Host
-import org.http4s.{Headers, Method, Request, Status, Uri}
+import org.http4s.{Headers, Method, Request, Uri}
 import cats.implicits._
 
 private [s3] case class ListBucketsCommand[F[_]: Effect]() extends ParamlessCommand[F, ListBucketsSuccess] {
@@ -18,8 +18,6 @@ private [s3] case class ListBucketsCommand[F[_]: Effect]() extends ParamlessComm
       req.withHeaders(authHeaders)
     }
   }
-
-  override def successStatus: Status = Status.Ok
 
   override def trySuccessResponse(response: ResponseContent): Option[ListBucketsSuccess] =
     response tryParse {

@@ -15,11 +15,19 @@ case class S3[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
   def putObject(
     region: Region,
     bucket: Bucket,
-    obj: Stream[F, Byte],
     name: Uri.Path,
+    obj: Stream[F, Byte],
     payloadSigning: PayloadSigning
   ): F[Unit] = runParamless {
-    PutObject(region, bucket, obj, name, payloadSigning)
+    PutObject(region, bucket, name, obj, payloadSigning)
+  }
+
+  def deleteObject(
+    region: Region,
+    bucket: Bucket,
+    name: Uri.Path
+  ): F[Unit] = runParamless {
+    DeleteObject(region, bucket, name)
   }
 
   private def runParamless[A](command: ParamlessCommand[F, A]): F[A] =
