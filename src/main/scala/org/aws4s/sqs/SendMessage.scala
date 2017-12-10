@@ -1,49 +1,29 @@
 package org.aws4s.sqs
 
-import cats.effect.Sync
-import org.http4s.Request
-import cats.implicits._
+import cats.effect.Effect
+import org.http4s.EntityDecoder
 import org.aws4s._
 import org.aws4s.XmlParsing._
 
-private [sqs] case class SendMessage(
+private [sqs] case class SendMessage[F[_]: Effect](
   q: Queue,
-  messageBody:            SendMessage.MessageBody.Validated,
-  delaySeconds:           SendMessage.DelaySeconds.Validated = SendMessage.DelaySeconds.empty,
-  messageDeduplicationId: SendMessage.MessageDeduplicationId.Validated = SendMessage.MessageDeduplicationId.empty,
-) extends OldCommand[SendMessageSuccess] {
+  messageBody:            SendMessage.MessageBodyParam,
+  delaySeconds:           Option[SendMessage.DelaySecondsParam] = None,
+  messageDeduplicationId: Option[SendMessage.MessageDeduplicationIdParam] = None,
+) extends SqsCommand[F, SendMessageSuccess](q, "SendMessage") {
 
-  override def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]] = {
-    val params = List(
-      messageBody.render,
-      delaySeconds.render,
-      messageDeduplicationId.render,
-    )
-    params.sequence map { validParams =>
-      SqsCommand.request(q, credentials, "SendMessage", validParams)
-    }
-  }
-
-  override def trySuccessResponse(response: ResponseContent): Option[SendMessageSuccess] =
-    response tryParse {
-      case XmlContent(response) =>
-        if (response.label == "SendMessageResponse")
-          Some(
-            SendMessageSuccess(
-              MessageId(text(response)("SendMessageResult", "MessageId")),
-              text(response)("SendMessageResult", "MD5OfMessageBody"),
-              integer(response)("SendMessageResult", "SequenceNumber") map SequenceNumber
-            )
-          )
-        else
-          None
-    }
+  override def params: List[Either[Failure, (String, String)]] =
+    List(
+      Some(messageBody.render),
+      delaySeconds map (_.render),
+      messageDeduplicationId map (_.render)
+    ).collect({ case Some(p) => p })
 }
 
-object SendMessage {
-  val MessageBody = Param[String]("MessageBody", _ => None)
-  val DelaySeconds = Param[Int]("DelaySeconds", n => if (n >= 0 && n <= 900) None else Some("not in [0,900]"))
-  val MessageDeduplicationId = Param[MessageDeduplicationId]("MessageDeduplicationId", _ => None)
+private [sqs] object SendMessage {
+  case class MessageBodyParam(value: String) extends Param[String]("MessageBody", _ => None)(value)
+  case class DelaySecondsParam(value: Int) extends Param[Int]("DelaySeconds", n => if (n >= 0 && n <= 900) None else Some("not in [0,900]"))(value)
+  case class MessageDeduplicationIdParam(value: MessageDeduplicationId) extends Param[MessageDeduplicationId]("MessageDeduplicationId", _ => None)(value)
 }
 
 case class SendMessageSuccess(
@@ -51,3 +31,19 @@ case class SendMessageSuccess(
   md5OfMessageBody:       String,
   sequenceNumber:         Option[SequenceNumber]
 )
+
+object SendMessageSuccess {
+  implicit def entityDecoder[F[_]: Effect]: EntityDecoder[F, SendMessageSuccess] =
+    ExtraEntityDecoderInstances.fromXml { elem =>
+      if (elem.label == "SendMessageResponse")
+        Some(
+          SendMessageSuccess(
+            MessageId(text(elem)("SendMessageResult", "MessageId")),
+            text(elem)("SendMessageResult", "MD5OfMessageBody"),
+            integer(elem)("SendMessageResult", "SequenceNumber") map SequenceNumber
+          )
+        )
+      else
+        None
+    }
+}

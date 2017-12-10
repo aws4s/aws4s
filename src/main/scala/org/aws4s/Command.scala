@@ -8,7 +8,7 @@ import org.http4s.client.Client
 
 private [aws4s] abstract class Command[F[_]: Effect, A: EntityDecoder[F, ?]] {
 
-  def request: Request[F]
+  def request: F[Request[F]]
 
   def payloadSigning: PayloadSigning
 
@@ -29,11 +29,10 @@ private [aws4s] abstract class Command[F[_]: Effect, A: EntityDecoder[F, ?]] {
       }
     }
 
-  @inline private final def signedRequest(credentials: () => Credentials): F[Request[F]] = {
-    val r = request
-    val requestSigning = RequestSigning(credentials, region, service, payloadSigning, Clock.utc)
-    requestSigning.signedHeaders(r) map { authHeaders =>
-      r.withHeaders(authHeaders)
-    }
-  }
+  @inline private final def signedRequest(credentials: () => Credentials): F[Request[F]] =
+    for {
+      r <- request
+      requestSigning = RequestSigning(credentials, region, service, payloadSigning, Clock.utc)
+      authHeaders <- requestSigning.signedHeaders(r)
+    } yield r.withHeaders(authHeaders)
 }
