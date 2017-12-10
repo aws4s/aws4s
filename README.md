@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
   - `getObject`
 
 ## Usage Examples ##
-```tut
+```scala
 import cats.effect.IO
 import org.aws4s.Credentials
 import org.aws4s.sqs.{Queue, SendMessageSuccess, Sqs}
