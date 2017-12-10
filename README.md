@@ -21,7 +21,33 @@ libraryDependencies ++= Seq(
   - `putObject`
 
 ## Usage Examples ##
-*TODO*
+```tut
+import cats.effect.IO
+import org.aws4s.Credentials
+import org.aws4s.sqs.{Queue, SendMessageSuccess, Sqs}
+import org.http4s.client.blaze.PooledHttp1Client
+
+val credentials = () => Credentials("ACCESS_KEY_HERE", "SECRET_KEY_HERE")
+val httpClient = PooledHttp1Client[IO]()
+
+val sqs = Sqs(httpClient, credentials)
+
+val queueUrl = "https://sqs.eu-central-1.amazonaws.com/FAKE_QUEUE_URL"
+val q = Queue.unsafeFromString(queueUrl)
+
+println("Sending a message..")
+val action =
+  sqs.sendMessage(q, "Yo!", delaySeconds = Some(5))
+    .fold(throw _, identity)  // Throws on an invalid parameter(s)
+    .attempt
+    .map {
+      case Left(err) => System.err.println(err)
+      case Right(success) => println(success)
+    }
+
+// Run final action to produce effects
+action.unsafeRunSync()
+```
 
 ## Versioning ##
 Unstable API until `1.0.0`, then semantic versioning from there on.
