@@ -1,10 +1,9 @@
 package org.aws4s.sqs
 
 import cats.effect.Sync
-import com.amazonaws.auth.AWSCredentialsProvider
 import org.http4s.{Request, Status}
 import cats.implicits._
-import org.aws4s.{Command, Failure, ResponseContent, XmlContent}
+import org.aws4s._
 import org.aws4s.XmlParsing._
 
 private [sqs] case class SendMessage(
@@ -14,7 +13,7 @@ private [sqs] case class SendMessage(
   messageDeduplicationId: SendMessage.MessageDeduplicationId.Validated = SendMessage.MessageDeduplicationId.empty,
 ) extends Command[SendMessageSuccess] {
 
-  override def request[F[_]: Sync](credentials: AWSCredentialsProvider): Either[Failure, F[Request[F]]] = {
+  override def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]] = {
     val params = List(
       messageBody.render,
       delaySeconds.render,

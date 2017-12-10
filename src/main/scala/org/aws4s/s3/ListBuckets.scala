@@ -1,7 +1,6 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import com.amazonaws.auth.AWSCredentialsProvider
 import org.aws4s._
 import org.http4s.headers.Host
 import org.http4s.{Headers, Method, Request, Status, Uri}
@@ -12,9 +11,9 @@ private [s3] case class ListBucketsCommand[F[_]: Effect]() extends ParamlessComm
   private val region = Region.`us-east-1`
   private val host = s"s3.amazonaws.com"
 
-  override def request(credentialsProvider: AWSCredentialsProvider): F[Request[F]] = {
+  override def request(credentials: () => Credentials): F[Request[F]] = {
     val req = Request[F](Method.GET, Uri.unsafeFromString(s"https://$host/"), headers = Headers(Host(host)))
-    val signing = RequestSigning(credentialsProvider, region, Service.s3, PayloadSigning.Signed, Clock.utc)
+    val signing = RequestSigning(credentials, region, Service.s3, PayloadSigning.Signed, Clock.utc)
     signing.signedHeaders(req) map { authHeaders =>
       req.withHeaders(authHeaders)
     }

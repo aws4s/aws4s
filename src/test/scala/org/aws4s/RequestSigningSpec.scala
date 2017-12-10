@@ -5,8 +5,6 @@ import java.time.LocalDateTime
 
 import fs2.Stream
 import cats.effect.IO
-import com.amazonaws.auth._
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import org.aws4s.s3.PayloadSigning
 import org.http4s.headers.Authorization
 import org.http4s.util.CaseInsensitiveString
@@ -17,19 +15,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
   val awsAccessKey = "AKIDEXAMPLE"
   val awsSecretKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"
-  val credentials: AWSCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey)
-  val awsCredentialsProvider: AWSCredentialsProvider = new AWSStaticCredentialsProvider(credentials)
+  val credentialsNow = Credentials(awsAccessKey, awsSecretKey)
+  val credentials = () => credentialsNow
   val region = Region("us-east-1")
   val service = Service("service")
 
   val sessionToken: String = "AKIDEXAMPLESESSION"
-  val credentialsWithSession: AWSCredentials = new BasicSessionCredentials(awsAccessKey, awsSecretKey, sessionToken)
-  val awsCredentialsProviderWithSession: AWSCredentialsProvider = new AWSStaticCredentialsProvider(credentialsWithSession)
-
-  // Test Credentials using profile for testing with session token.
-  val credentialsPath = getClass.getResource("/credentials").getPath
-  val profileCredentialsWithSession: AWSCredentials = new ProfileCredentialsProvider(credentialsPath.toString, "default").getCredentials
-  val awsProfileCredentialsProviderWithSession: AWSCredentialsProvider = new AWSStaticCredentialsProvider(credentialsWithSession)
+  val credentialsNowWithSessionToken = Credentials(awsAccessKey, awsSecretKey, Some(sessionToken))
+  val credentialsWithSessionToken = () => credentialsNowWithSessionToken
 
   val clock: () => LocalDateTime = () => LocalDateTime.of(2011, 9, 9, 23, 36, 0)
 
@@ -44,7 +37,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
     // Header for HTTP Request.
     val headers = Headers(Header("Date", date), fooHost)
 
-    val signer = RequestSigning(awsCredentialsProvider, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // The signature must match the expected signature
@@ -73,7 +66,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     val params: Map[String, String] = Map.empty[String, String] ++ Map("Param2" -> "value2", "Param1" -> "value1")
 
-    val signer = RequestSigning(awsCredentialsProvider, region, service, PayloadSigning.Signed, () => LocalDateTime.of(2015, 8, 30, 12, 36, 0))
+    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, () => LocalDateTime.of(2015, 8, 30, 12, 36, 0))
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, params, headers, Stream.empty).unsafeRunSync()
 
     // The signature must match the expected signature
@@ -97,7 +90,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(awsCredentialsProvider, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.POST, queryParams, headers, Stream.empty).unsafeRunSync()
 
     // THEN
@@ -120,7 +113,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(awsCredentialsProvider, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // THEN
@@ -143,7 +136,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(awsCredentialsProviderWithSession, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentialsWithSessionToken, region, service, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // THEN

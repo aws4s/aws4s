@@ -1,13 +1,12 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import com.amazonaws.auth.AWSCredentialsProvider
 import org.aws4s._
 import org.http4s.Uri
 import org.http4s.client.Client
 import fs2.Stream
 
-case class S3[F[_]: Effect](client: Client[F], credentials: AWSCredentialsProvider) {
+case class S3[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
 
   val listBuckets: F[ListBucketsSuccess] = runParamless {
     ListBucketsCommand()
