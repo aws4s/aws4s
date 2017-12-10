@@ -1,7 +1,7 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.{Command, Credentials, Failure}
+import org.aws4s.{OldCommand, Credentials, Failure}
 import org.http4s.client.Client
 
 case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
@@ -34,6 +34,6 @@ case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) 
     )
   }
 
-  private def run[A](command: Command[A]): Either[Failure, F[A]] =
+  private def run[A](command: OldCommand[A]): Either[Failure, F[A]] =
     command.run(client, credentials)
 }

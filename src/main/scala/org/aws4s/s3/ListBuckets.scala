@@ -7,7 +7,7 @@ import org.http4s.{EntityDecoder, Headers, Method, Request, Uri}
 import cats.implicits._
 import cats.implicits._
 
-private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Comm[F, ListBucketsSuccess] {
+private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess] {
 
   override val region = Region.`us-east-1`
   private val host = s"s3.amazonaws.com"

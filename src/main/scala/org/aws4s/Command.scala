@@ -1,32 +1,39 @@
 package org.aws4s
 
-import cats.effect.{Effect, Sync}
+import cats.effect.Effect
+import org.aws4s.s3.PayloadSigning
+import org.http4s.{EntityDecoder, Request}
 import cats.implicits._
-import org.http4s.Request
 import org.http4s.client.Client
 
-/** A command which succeeds with a value of [[A]] */
-private [aws4s] trait Command[A] {
+private [aws4s] abstract class Command[F[_]: Effect, A: EntityDecoder[F, ?]] {
 
-  /** Produces the request for the command */
-  def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]]
+  def request: Request[F]
 
-  /** Tries to decode the successful response of the command */
-  def trySuccessResponse(response: ResponseContent): Option[A]
+  def payloadSigning: PayloadSigning
 
-  /** Runs the command given an HTTP client and AWS credentials and handles the response */
-  def run[F[_]: Effect](client: Client[F], credentials: () => Credentials): Either[Failure, F[A]] = {
-    request[F](credentials) map { r =>
+  def service: Service
+
+  def region: Region
+
+  final def run(client: Client[F], credentials: () => Credentials): F[A] =
+    signedRequest(credentials) >>= { r =>
       client.fetch(r) { resp =>
-        resp.as[ResponseContent] flatMap { content =>
-          if (resp.status.isSuccess) {
-            trySuccessResponse(content) match {
-              case Some(a) => a.pure[F]
-              case None => (Failure.badResponse(resp.status, resp.headers, content): Throwable).raiseError[F, A]
-            }
-          } else (Failure.badResponse(resp.status, resp.headers, content): Throwable).raiseError[F, A]
+        if (resp.status.isSuccess) {
+          resp.as[A]
+        } else {
+          resp.as[ResponseContent] >>= { content =>
+            (Failure.badResponse(resp.status, resp.headers, content): Throwable).raiseError[F, A]
+          }
         }
       }
+    }
+
+  @inline private final def signedRequest(credentials: () => Credentials): F[Request[F]] = {
+    val r = request
+    val requestSigning = RequestSigning(credentials, region, service, payloadSigning, Clock.utc)
+    requestSigning.signedHeaders(r) map { authHeaders =>
+      r.withHeaders(authHeaders)
     }
   }
 }

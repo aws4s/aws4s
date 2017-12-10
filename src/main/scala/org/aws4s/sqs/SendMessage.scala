@@ -11,7 +11,7 @@ private [sqs] case class SendMessage(
   messageBody:            SendMessage.MessageBody.Validated,
   delaySeconds:           SendMessage.DelaySeconds.Validated = SendMessage.DelaySeconds.empty,
   messageDeduplicationId: SendMessage.MessageDeduplicationId.Validated = SendMessage.MessageDeduplicationId.empty,
-) extends Command[SendMessageSuccess] {
+) extends OldCommand[SendMessageSuccess] {
 
   override def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]] = {
     val params = List(

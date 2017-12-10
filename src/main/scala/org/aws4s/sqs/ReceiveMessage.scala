@@ -10,7 +10,7 @@ private [sqs] case class ReceiveMessage(
   maxNumberOfMessages:  ReceiveMessage.MaxNumberOfMessages.Validated = ReceiveMessage.MaxNumberOfMessages.empty,
   visibilityTimeout:    ReceiveMessage.VisibilityTimeout.Validated = ReceiveMessage.VisibilityTimeout.empty,
   waitTimeSeconds:      ReceiveMessage.WaitTimeSeconds.Validated = ReceiveMessage.WaitTimeSeconds.empty,
-) extends Command[ReceiveMessageSuccess] {
+) extends OldCommand[ReceiveMessageSuccess] {
 
   override def request[F[_]: Sync](credentials: () => Credentials): Either[Failure, F[Request[F]]] = {
     val params = List(
