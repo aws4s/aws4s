@@ -1,39 +1,42 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.{Command, Credentials, Failure}
+import org.aws4s.{Command, Credentials}
+import org.http4s.EntityDecoder
 import org.http4s.client.Client
 
 case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
 
   def sendMessage(
-    q:                      Queue,
-    messageBody:            String,
-    delaySeconds:           Option[Int] = None,
-    messageDeduplicationId: Option[MessageDeduplicationId] = None
-  ): Either[Failure, F[SendMessageSuccess]] = run {
+    q:                        Queue,
+    messageBody:              String,
+    delaySeconds:             Option[Int] = None,
+    messageDeduplicationId:   Option[MessageDeduplicationId] = None
+  ): F[SendMessageSuccess] = run {
     SendMessage(
       q,
-      SendMessage.MessageBody(messageBody),
-      SendMessage.DelaySeconds.optional(delaySeconds),
-      SendMessage.MessageDeduplicationId.optional(messageDeduplicationId),
+      SendMessage.MessageBodyParam(messageBody),
+      delaySeconds map SendMessage.DelaySecondsParam,
+      messageDeduplicationId map SendMessage.MessageDeduplicationIdParam,
     )
   }
 
   def receiveMessage(
-    q:                      Queue,
-    maxNumberOfMessages:    Option[Int] = None,
-    visibilityTimeout:      Option[Int] = None,
-    waitTimeSeconds:        Option[Int] = None,
-  ): Either[Failure, F[ReceiveMessageSuccess]] = run {
+    q:                        Queue,
+    maxNumberOfMessages:      Option[Int] = None,
+    visibilityTimeout:        Option[Int] = None,
+    waitTimeSeconds:          Option[Int] = None,
+    receiveRequestAttemptId:  Option[ReceiveRequestAttemptId] = None,
+  ): F[ReceiveMessageSuccess] = run {
     ReceiveMessage(
       q,
-      ReceiveMessage.MaxNumberOfMessages.optional(maxNumberOfMessages),
-      ReceiveMessage.VisibilityTimeout.optional(visibilityTimeout),
-      ReceiveMessage.WaitTimeSeconds.optional(waitTimeSeconds),
+      maxNumberOfMessages map ReceiveMessage.MaxNumberOfMessagesParam,
+      visibilityTimeout map ReceiveMessage.VisibilityTimeoutParam,
+      waitTimeSeconds map ReceiveMessage.WaitTimeSecondsParam,
+      receiveRequestAttemptId map ReceiveMessage.ReceiveRequestAttemptIdParam,
     )
   }
 
-  private def run[A](command: Command[A]): Either[Failure, F[A]] =
+  private def run[A: EntityDecoder[F, ?]](command: Command[F, A]): F[A] =
     command.run(client, credentials)
 }

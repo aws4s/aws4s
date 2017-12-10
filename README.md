@@ -19,6 +19,8 @@ libraryDependencies ++= Seq(
 - S3:
   - `listBuckets`
   - `putObject`
+  - `deleteObject`
+  - `getObject`
 
 ## Usage Examples ##
 ```tut
@@ -35,10 +37,8 @@ val sqs = Sqs(httpClient, credentials)
 val queueUrl = "https://sqs.eu-central-1.amazonaws.com/FAKE_QUEUE_URL"
 val q = Queue.unsafeFromString(queueUrl)
 
-println("Sending a message..")
-val action =
+val action: IO[Unit] =
   sqs.sendMessage(q, "Yo!", delaySeconds = Some(5))
-    .fold(throw _, identity)  // Throws on an invalid parameter(s)
     .attempt
     .map {
       case Left(err) => System.err.println(err)
@@ -46,6 +46,7 @@ val action =
     }
 
 // Run final action to produce effects
+println("Sending a message..")
 action.unsafeRunSync()
 ```
 

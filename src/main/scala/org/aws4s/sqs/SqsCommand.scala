@@ -1,23 +1,30 @@
 package org.aws4s.sqs
 
-import cats.effect.Sync
+import cats.effect.Effect
 import org.http4s.headers.Host
-import org.http4s.{Headers, Method, Request, UrlForm}
-import cats.implicits._
+import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s.s3.PayloadSigning
-import org.aws4s.{Clock, Credentials, RequestSigning, Service}
+import org.aws4s._
+import cats.implicits._
 
-private [sqs] object SqsCommand {
+private [sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]](
+  q: Queue,
+  action: String,
+) extends Command[F, A] {
 
-  /** Builds the request for an SQS command */
-  def request[F[_]: Sync](q: Queue, credentials: () => Credentials, action: String, validParams: List[Option[(String, String)]]): F[Request[F]] = {
-    val body =
-      validParams.collect({ case Some(x) => x }).foldLeft(UrlForm())((form, newPair) => form + newPair) +
-        ("Action" -> action)
-
-    for {
-      req          <- Request[F](Method.POST, q.uri, headers = Headers(Host(q.host))).withBody[UrlForm](body)
-      extraHeaders <- RequestSigning(credentials, q.region, Service.sqs, PayloadSigning.Signed, Clock.utc).signedHeaders(req)
-    } yield req.withHeaders(extraHeaders)
+  override def request: F[Request[F]] = {
+    params.sequence match {
+      case Right(params) =>
+        val body = params.foldLeft(UrlForm())((form, newPair) => form + newPair) + ("Action" -> action)
+        Request[F](Method.POST, q.uri, headers = Headers(Host(q.host))).withBody[UrlForm](body)
+      case Left(err) => err.asInstanceOf[Throwable].raiseError[F, Request[F]]
+    }
   }
+
+  override def payloadSigning: PayloadSigning = PayloadSigning.Signed
+  override def service: Service = Service.sqs
+  override def region: Region = q.region
+
+
+  def params: List[Either[Failure, (String, String)]]
 }
