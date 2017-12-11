@@ -6,17 +6,17 @@ import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, Uri}
 import cats.implicits._
 
-private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess] {
+private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess, Unit] {
 
   override val region = Region.`us-east-1`
   private val host = s"s3.amazonaws.com"
 
-  override def request: F[Request[F]] =
+  override def generateRequest(validRenderedParams: List[Param.Rendered[Unit]]): F[Request[F]] =
     Request(Method.GET, Uri.unsafeFromString(s"https://$host/"), headers = Headers(Host(host))).pure[F]
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def service: Service = Service.s3
+  override def serviceName: ServiceName = ServiceName.s3
 }
 
 case class ListBucketsSuccess(

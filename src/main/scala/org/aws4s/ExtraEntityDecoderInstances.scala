@@ -5,6 +5,7 @@ import cats.data.EitherT
 import cats.effect.Effect
 import cats.implicits._
 import fs2.Stream
+import io.circe.Decoder
 import org.http4s.{DecodeFailure, EntityDecoder, InvalidMessageBodyFailure, MediaRange}
 import org.http4s.scalaxml._
 
@@ -19,4 +20,7 @@ private [aws4s] object ExtraEntityDecoderInstances {
       val result = f(elem)
       EitherT.fromEither(result.toRight(InvalidMessageBodyFailure("Response was not as expected")))
     }
+
+  implicit def entityDecoder[F[_]: Effect, A: Decoder]: EntityDecoder[F, A] =
+    org.http4s.circe.jsonOf[F, A]
 }

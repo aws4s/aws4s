@@ -22,13 +22,16 @@ libraryDependencies ++= Seq(
   - `putObject`
   - `deleteObject`
   - `getObject`
+- KMS:
+  - `encrypt`
+  - `decrypt`
 
 ## Usage Examples ##
 ```scala
 import cats.effect.IO
 import org.aws4s.Credentials
 import org.aws4s.sqs.{Queue, SendMessageSuccess, Sqs}
-import org.http4s.client.blaze.PooledHttp1Client
+import org.http4s.client.blaze.PooledHttp1Client    // You'll need an extra dependency for that
 
 val credentials = () => Credentials("ACCESS_KEY_HERE", "SECRET_KEY_HERE")
 val httpClient = PooledHttp1Client[IO]()

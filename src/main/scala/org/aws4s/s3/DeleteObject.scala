@@ -5,12 +5,12 @@ import org.aws4s._
 import org.http4s.{Method, Request, Uri}
 import cats.implicits._
 
-private [aws4s] case class DeleteObject[F[_]: Effect](region: Region, bucket: Bucket, name: Uri.Path) extends Command[F, Unit] {
+private [aws4s] case class DeleteObject[F[_]: Effect](region: Region, bucket: Bucket, name: Uri.Path) extends Command[F, Unit, Nothing] {
 
-  override def request: F[Request[F]] =
+  override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =
     ObjectRequests.request[F](Method.DELETE, bucket, name).pure[F]
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def service: Service = Service.s3
+  override def serviceName: ServiceName = ServiceName.s3
 }
