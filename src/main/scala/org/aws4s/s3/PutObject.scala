@@ -16,7 +16,7 @@ private [aws4s] case class PutObject[F[_]: Effect](
 ) extends Command[F, Unit, Nothing] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =
-    ObjectRequests.request[F](Method.PUT, bucket, name, obj).pure[F]
+    ObjectRequests.request[F](region, Method.PUT, bucket, name, obj).pure[F]
 
   override def serviceName: ServiceName = ServiceName.s3
 

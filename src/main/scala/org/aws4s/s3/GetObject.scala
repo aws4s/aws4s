@@ -15,7 +15,7 @@ private [aws4s] case class GetObject[F[_]: Effect](
 ) extends Command[F, Stream[F, Byte], Nothing] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =
-    ObjectRequests.request[F](Method.GET, bucket, name).pure[F]
+    ObjectRequests.request[F](region, Method.GET, bucket, name).pure[F]
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
