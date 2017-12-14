@@ -18,6 +18,7 @@ scalacOptions in (Compile, doc) ++= Seq(
 )
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 enablePlugins(TutPlugin)
 
 val http4sVersion     = "0.18.0-M6"
@@ -31,6 +32,7 @@ libraryDependencies ++= Seq(
   "org.http4s"     %% "http4s-circe"         % http4sVersion,
   "org.http4s"     %% "http4s-scala-xml"     % http4sVersion,
   "io.circe"       %% "circe-core"           % circeVersion,
+  "io.circe"       %% "circe-generic"        % circeVersion,
   "org.scalatest"  %% "scalatest"            % scalatestVersion % Test,
 )
 

@@ -22,7 +22,7 @@ private [aws4s] abstract class Command[F[_]: Effect, A: EntityDecoder[F, ?], B] 
   def region: Region
 
   /** The input parameters of the command */
-  def params: List[Param.RenderedOptional[B]] = List.empty
+  def params: List[Param.RenderedOptional[B]]
 
   /** Runs the command given an HTTP client and a set of credentials */
   final def run(client: Client[F], credentials: () => Credentials): F[A] =

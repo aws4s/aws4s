@@ -5,6 +5,7 @@ import org.aws4s._
 import org.http4s.{Method, Request, Uri}
 import fs2.Stream
 import cats.implicits._
+import org.aws4s.Param.RenderedOptional
 
 private [aws4s] case class PutObject[F[_]: Effect](
   region: Region,
@@ -18,4 +19,6 @@ private [aws4s] case class PutObject[F[_]: Effect](
     ObjectRequests.request[F](Method.PUT, bucket, name, obj).pure[F]
 
   override def serviceName: ServiceName = ServiceName.s3
+
+  override def params: List[RenderedOptional[Nothing]] = List.empty
 }

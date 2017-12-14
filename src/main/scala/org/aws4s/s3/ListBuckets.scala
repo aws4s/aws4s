@@ -5,6 +5,7 @@ import org.aws4s._
 import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, Uri}
 import cats.implicits._
+import org.aws4s.Param.RenderedOptional
 
 private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess, Unit] {
 
@@ -17,6 +18,8 @@ private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, Li
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   override def serviceName: ServiceName = ServiceName.s3
+
+  override def params: List[RenderedOptional[Unit]] = List.empty
 }
 
 case class ListBucketsSuccess(

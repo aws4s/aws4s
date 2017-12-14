@@ -6,12 +6,12 @@ import io.circe.{Decoder, Json}
 import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
 
-private [kms] case class Decrypt[F[_]: Effect, A: Decoder](
+private [kms] case class Decrypt[F[_]: Effect](
   region: Region,
   ciphertext: CiphertextBlobParam,
   context: Option[EncryptionContextParam],
   grantTokens: Option[GrantTokensParam],
-) extends KmsCommand[F, A](region) {
+) extends KmsCommand[F, DecryptSuccess] {
   override def action: String = "Decrypt"
   override def params: List[RenderedOptional[Json]] =
     List(

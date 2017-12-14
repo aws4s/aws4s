@@ -10,12 +10,13 @@ import org.http4s.headers.{Host, `Content-Type`}
 import cats.implicits._
 import ExtraEntityDecoderInstances._
 
-private [kms] abstract class KmsCommand[F[_]: Effect, A: Decoder](region: Region) extends Command[F, A, Json] {
+private [kms] abstract class KmsCommand[F[_]: Effect, A: Decoder] extends Command[F, A, Json] {
 
   override def serviceName: ServiceName = ServiceName.kms
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   def action: String
+  def region: Region
 
   override def generateRequest(validParams: List[Param.Rendered[Json]]): F[Request[F]] = {
     val host = s"kms.${region.name}.amazonaws.com"

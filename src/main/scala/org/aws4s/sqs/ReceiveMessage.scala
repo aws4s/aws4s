@@ -12,8 +12,8 @@ private [sqs] case class ReceiveMessage[F[_]: Effect](
   visibilityTimeout:        Option[ReceiveMessage.VisibilityTimeoutParam],
   waitTimeSeconds:          Option[ReceiveMessage.WaitTimeSecondsParam],
   receiveRequestAttemptId:  Option[ReceiveMessage.ReceiveRequestAttemptIdParam],
-) extends SqsCommand[F, ReceiveMessageSuccess](q, "ReceiveMessage") {
-
+) extends SqsCommand[F, ReceiveMessageSuccess] {
+  override def action: String = "ReceiveMessage"
   override def params: List[RenderedOptional[String]] =
     List(
       maxNumberOfMessages map (_.render),

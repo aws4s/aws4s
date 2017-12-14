@@ -6,10 +6,10 @@ import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s.s3.PayloadSigning
 import org.aws4s._
 
-private [sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]](
-  q: Queue,
-  action: String,
-) extends Command[F, A, String] {
+private [sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]] extends Command[F, A, String] {
+
+  def action: String
+  def q: Queue
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[String]]): F[Request[F]] = {
     val body = validRenderedParams.foldLeft(UrlForm())((form, newPair) => form + newPair) + ("Action" -> action)

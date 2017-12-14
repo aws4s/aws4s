@@ -6,6 +6,7 @@ import org.http4s.{Method, Request, Uri}
 import fs2.Stream
 import ExtraEntityDecoderInstances._
 import cats.implicits._
+import org.aws4s.Param.RenderedOptional
 
 private [aws4s] case class GetObject[F[_]: Effect](
   region: Region,
@@ -19,4 +20,6 @@ private [aws4s] case class GetObject[F[_]: Effect](
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   override def serviceName: ServiceName = ServiceName.s3
+
+  override def params: List[RenderedOptional[Nothing]] = List.empty
 }

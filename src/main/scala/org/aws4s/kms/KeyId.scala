@@ -1,6 +1,6 @@
 package org.aws4s.kms
 
-import io.circe.Encoder
+import io.circe.{Decoder, Encoder}
 
 case class KeyId(value: String) extends AnyVal
 
@@ -10,4 +10,7 @@ object KeyId {
 
   implicit val encoder: Encoder[KeyId] =
     Encoder[String] contramap (_.value)
+
+  implicit val decoder: Decoder[KeyId] =
+    Decoder[String] map KeyId.apply
 }

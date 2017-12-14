@@ -6,7 +6,8 @@ import org.aws4s.Param.RenderedOptional
 private [sqs] case class DeleteMessage[F[_]: Effect](
   q: Queue,
   receiptHandle: DeleteMessage.ReceiptHandleParam
-) extends SqsCommand[F, Unit](q, "DeleteMessage") {
+) extends SqsCommand[F, Unit] {
+  override val action = "DeleteMessage"
   override def params: List[RenderedOptional[String]] =
     List(
       Some(receiptHandle.render),

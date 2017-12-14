@@ -5,6 +5,8 @@ import io.circe.Json
 import org.aws4s.{Credentials, Region, Service}
 import org.http4s.client.Client
 import org.aws4s.ExtraEntityDecoderInstances._
+import org.aws4s.kms.CreateKey.DescriptionParam
+import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 
 case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () => Credentials) extends Service[F, Json] {
 
@@ -14,7 +16,7 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
     context: Option[Map[String, String]] = None,
     grantTokens: Option[GrantTokens],
   ): F[EncryptSuccess] = run {
-    Encrypt[F, EncryptSuccess](
+    Encrypt(
       region,
       KeyIdParam(keyId),
       PlaintextParam(Blob(plaintext)),
@@ -28,11 +30,19 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
     context: Option[Map[String, String]],
     grantTokens: Option[GrantTokens],
   ): F[DecryptSuccess] = run {
-    Decrypt[F, DecryptSuccess](
+    Decrypt(
       region,
       CiphertextBlobParam(Blob(ciphertext)),
       context map EncryptionContextParam,
       grantTokens map GrantTokensParam,
     )
+  }
+
+  def createKey(description: Option[String] = None): F[CreateKeySuccess] = run {
+    CreateKey(region, description map DescriptionParam.apply)
+  }
+
+  def scheduleKeyDeletion(keyId: KeyId, pendingWindowInDays: Option[Int] = None): F[Unit] = run {
+    ScheduleKeyDeletion(region, KeyIdParam(keyId), pendingWindowInDays map PendingWindowInDaysParam.apply)
   }
 }

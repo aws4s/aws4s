@@ -11,8 +11,8 @@ private [sqs] case class SendMessage[F[_]: Effect](
   messageBody:            SendMessage.MessageBodyParam,
   delaySeconds:           Option[SendMessage.DelaySecondsParam] = None,
   messageDeduplicationId: Option[SendMessage.MessageDeduplicationIdParam] = None,
-) extends SqsCommand[F, SendMessageSuccess](q, "SendMessage") {
-
+) extends SqsCommand[F, SendMessageSuccess] {
+  override def action: String = "SendMessage"
   override def params: List[RenderedOptional[String]] =
     List(
       Some(messageBody.render),

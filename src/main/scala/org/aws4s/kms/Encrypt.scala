@@ -6,13 +6,13 @@ import io.circe.{Decoder, Json}
 import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
 
-private [kms] case class Encrypt[F[_]: Effect, A: Decoder](
+private [kms] case class Encrypt[F[_]: Effect](
   region: Region,
   keyId: KeyIdParam,
   plaintext: PlaintextParam,
   context: Option[EncryptionContextParam],
   grantTokens: Option[GrantTokensParam],
-) extends KmsCommand[F, A](region) {
+) extends KmsCommand[F, EncryptSuccess] {
   override def action: String = "Encrypt"
   override def params: List[RenderedOptional[Json]] =
     List(
