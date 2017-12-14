@@ -14,7 +14,7 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
     keyId: KeyId,
     plaintext: Array[Byte],
     context: Option[Map[String, String]] = None,
-    grantTokens: Option[GrantTokens],
+    grantTokens: Option[GrantTokens] = None,
   ): F[EncryptSuccess] = run {
     Encrypt(
       region,
@@ -27,8 +27,8 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
 
   def decrypt(
     ciphertext: Array[Byte],
-    context: Option[Map[String, String]],
-    grantTokens: Option[GrantTokens],
+    context: Option[Map[String, String]] = None,
+    grantTokens: Option[GrantTokens] = None,
   ): F[DecryptSuccess] = run {
     Decrypt(
       region,
@@ -42,7 +42,7 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
     CreateKey(region, description map DescriptionParam.apply)
   }
 
-  def scheduleKeyDeletion(keyId: KeyId, pendingWindowInDays: Option[Int] = None): F[Unit] = run {
+  def scheduleKeyDeletion(keyId: KeyId, pendingWindowInDays: Option[Int] = None): F[ScheduleKeyDeletionSuccess] = run {
     ScheduleKeyDeletion(region, KeyIdParam(keyId), pendingWindowInDays map PendingWindowInDaysParam.apply)
   }
 }
