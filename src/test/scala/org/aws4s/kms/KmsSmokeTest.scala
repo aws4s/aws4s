@@ -15,8 +15,8 @@ class KmsSmokeTest extends SmokeTest {
       ciphertext  <- kms.encrypt(keyId, data.getBytes) map (_.cipherText)
       plaintext   <- kms.decrypt(ciphertext) map (_.plainText)
       _           <- kms.scheduleKeyDeletion(keyId, Some(7))
-    } yield new String(plaintext) == data
+    } yield new String(plaintext)
 
-    all.unsafeToFuture() map (assert(_))
+    all.unsafeToFuture() map (_ shouldBe data)
   }
 }
