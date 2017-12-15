@@ -18,18 +18,22 @@ scalacOptions in (Compile, doc) ++= Seq(
 )
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 enablePlugins(TutPlugin)
 
 val http4sVersion     = "0.18.0-M6"
 val awsSignerVersion  = "0.5.1"
 val awsSdkCoreVersion = "1.11.51"
 val scalatestVersion  = "3.0.4"
+val circeVersion      = "0.9.0-M2"
 
 libraryDependencies ++= Seq(
-  "org.http4s"     %% "http4s-dsl"           % http4sVersion,
-  "org.http4s"     %% "http4s-blaze-client"  % http4sVersion,
-  "org.http4s"     %% "http4s-scala-xml"     % http4sVersion,
-  "org.scalatest"  %% "scalatest"            % scalatestVersion % Test,
+  "org.http4s"     %% "http4s-client"          % http4sVersion,
+  "org.http4s"     %% "http4s-circe"           % http4sVersion,
+  "org.http4s"     %% "http4s-scala-xml"       % http4sVersion,
+  "io.circe"       %% "circe-core"             % circeVersion,
+  "org.scalatest"  %% "scalatest"              % scalatestVersion % Test,
+  "org.http4s"     %% "http4s-blaze-client"    % http4sVersion    % Test,
 )
 
 publishTo := Some(

@@ -13,22 +13,19 @@ libraryDependencies ++= Seq(
 ```
 
 ## Service Support ##
-- SQS:
-  - `sendMessage`
-  - `receiveMessage`
-  - `deleteMessage`
-- S3:
-  - `listBuckets`
-  - `putObject`
-  - `deleteObject`
-  - `getObject`
+- SQS: (`sendMessage`, `receiveMessage`, `deleteMessage`)
+- S3: (`listBuckets`, `putObject`, `deleteObject`, `getObject`)
+- KMS: (`encrypt`, `decrypt`, `createKey`, `scheduleKeyDeletion`)
+
+Missing a service or a certain functionality for a service? Create a [feature request](https://github.com/aws4s/aws4s/issues/new?labels=feature%20request). PRs are
+also welcome.
 
 ## Usage Examples ##
 ```scala
 import cats.effect.IO
 import org.aws4s.Credentials
 import org.aws4s.sqs.{Queue, SendMessageSuccess, Sqs}
-import org.http4s.client.blaze.PooledHttp1Client
+import org.http4s.client.blaze.PooledHttp1Client    // You'll need the `http4s-blaze-client for that
 
 val credentials = () => Credentials("ACCESS_KEY_HERE", "SECRET_KEY_HERE")
 val httpClient = PooledHttp1Client[IO]()

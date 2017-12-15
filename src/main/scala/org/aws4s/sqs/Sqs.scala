@@ -1,11 +1,10 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.{Command, Credentials}
-import org.http4s.EntityDecoder
+import org.aws4s.{Credentials, Service}
 import org.http4s.client.Client
 
-case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
+case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) extends Service[F, String] {
 
   def sendMessage(
     q:                        Queue,
@@ -46,7 +45,4 @@ case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) 
       DeleteMessage.ReceiptHandleParam(receiptHandle),
     )
   }
-
-  private def run[A: EntityDecoder[F, ?]](command: Command[F, A]): F[A] =
-    command.run(client, credentials)
 }

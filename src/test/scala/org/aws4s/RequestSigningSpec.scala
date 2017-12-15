@@ -18,7 +18,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
   val credentialsNow = Credentials(awsAccessKey, awsSecretKey)
   val credentials = () => credentialsNow
   val region = Region("us-east-1")
-  val service = Service("service")
+  val service = ServiceName("service")
 
   val sessionToken: String = "AKIDEXAMPLESESSION"
   val credentialsNowWithSessionToken = Credentials(awsAccessKey, awsSecretKey, Some(sessionToken))

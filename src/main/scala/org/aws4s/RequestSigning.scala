@@ -63,7 +63,7 @@ private [aws4s] object RequestSigning {
   private def xAmzContentSha256(content: String): Header =
     Header("x-amz-content-sha256", content)
 
-  private def sign(stringToSign: String, now: LocalDateTime, credentials: Credentials, region: Region, service: Service): String = {
+  private def sign(stringToSign: String, now: LocalDateTime, credentials: Credentials, region: Region, service: ServiceName): String = {
 
     val key: Array[Byte] = {
       val kSecret: Array[Byte] = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
@@ -80,7 +80,7 @@ private [aws4s] object RequestSigning {
 private [aws4s] case class RequestSigning(
   credentials: () => Credentials,
   region: Region,
-  service: Service,
+  service: ServiceName,
   payloadSigning: PayloadSigning,
   clock: () => LocalDateTime
 ) {

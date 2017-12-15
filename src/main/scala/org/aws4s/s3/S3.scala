@@ -5,32 +5,33 @@ import org.aws4s._
 import org.http4s.Uri
 import org.http4s.client.Client
 import fs2.Stream
+import ExtraEntityDecoderInstances._
 
-case class S3[F[_]: Effect](client: Client[F], credentials: () => Credentials) {
+case class S3[F[_]: Effect](client: Client[F], region: Region, credentials: () => Credentials) extends Service[F, Nothing] {
 
   val listBuckets: F[ListBucketsSuccess] =
     ListBucketsCommand().run(client, credentials)
 
   def putObject(
-    region: Region,
     bucket: Bucket,
     name: Uri.Path,
     obj: Stream[F, Byte],
-    payloadSigning: PayloadSigning
-  ): F[Unit] =
-    PutObject(region, bucket, name, obj, payloadSigning).run(client, credentials)
+    payloadSigning: PayloadSigning = PayloadSigning.Unsigned,
+  ): F[Unit] = run {
+    PutObject(region, bucket, name, obj, payloadSigning)
+  }
 
   def deleteObject(
-    region: Region,
     bucket: Bucket,
     name: Uri.Path
-  ): F[Unit] =
-    DeleteObject(region, bucket, name).run(client, credentials)
+  ): F[Unit] = run {
+    DeleteObject(region, bucket, name)
+  }
 
   def getObject(
-    region: Region,
     bucket: Bucket,
     name: Uri.Path
-  ): F[Stream[F, Byte]] =
-    GetObject(region, bucket, name).run(client, credentials)
+  ): F[Stream[F, Byte]] = run {
+    GetObject(region, bucket, name)
+  }
 }

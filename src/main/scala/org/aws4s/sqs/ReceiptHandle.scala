@@ -5,6 +5,6 @@ import cats.implicits._
 case class ReceiptHandle(value: String) extends AnyVal
 
 object ReceiptHandle {
-  implicit val paramValue: ParamValue[ReceiptHandle] =
-    ParamValue[String] contramap (_.value)
+  implicit val paramValue: TextParamValue[ReceiptHandle] =
+    TextParamValue[String] contramap (_.value)
 }
