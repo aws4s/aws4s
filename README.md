@@ -13,18 +13,12 @@ libraryDependencies ++= Seq(
 ```
 
 ## Service Support ##
-- SQS:
-  - `sendMessage`
-  - `receiveMessage`
-  - `deleteMessage`
-- S3:
-  - `listBuckets`
-  - `putObject`
-  - `deleteObject`
-  - `getObject`
-- KMS:
-  - `encrypt`
-  - `decrypt`
+- SQS: (`sendMessage`, `receiveMessage`, `deleteMessage`)
+- S3: (`listBuckets`, `putObject`, `deleteObject`, `getObject`)
+- KMS: (`encrypt`, `decrypt`, `createKey`, `scheduleKeyDeletion`)
+
+Missing a service or a certain functionality for a service? Create a [feature request](https://github.com/aws4s/aws4s/issues/new?labels=feature%20request). PRs are
+also welcome.
 
 ## Usage Examples ##
 ```scala
