@@ -1,10 +1,10 @@
 package org.aws4s
 
-case class ServiceName(name: String) extends AnyVal
+abstract class ServiceName(val name: String)
 
 object ServiceName {
-  val sqs       = ServiceName("sqs")
-  val s3        = ServiceName("s3")
-  val kms       = ServiceName("kms")
-  val dynamodb  = ServiceName("dynamodb")
+  object Sqs extends ServiceName("sqs")
+  object S3 extends ServiceName("s3")
+  object Kms extends ServiceName("kms")
+  object DynamoDb extends ServiceName("dynamodb")
 }

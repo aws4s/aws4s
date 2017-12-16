@@ -18,7 +18,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
   val credentialsNow = Credentials(awsAccessKey, awsSecretKey)
   val credentials = () => credentialsNow
   val region = Region("us-east-1")
-  val service = ServiceName("service")
+  object DummyServiceName extends ServiceName("service")
 
   val sessionToken: String = "AKIDEXAMPLESESSION"
   val credentialsNowWithSessionToken = Credentials(awsAccessKey, awsSecretKey, Some(sessionToken))
@@ -37,14 +37,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
     // Header for HTTP Request.
     val headers = Headers(Header("Date", date), fooHost)
 
-    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, DummyServiceName, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // The signature must match the expected signature
     val expectedSignature = "b0a671385ef1f9513c15c34d206c7d83e3a4d848c43603569eca2760ee75c3b3"
     val expectedAuthorizationHeader = String.format(
       "AWS4-HMAC-SHA256 Credential=%s/20110909/%s/%s/aws4_request, SignedHeaders=date;host, Signature=%s",
-      awsAccessKey, region.name, service.name, expectedSignature
+      awsAccessKey, region.name, DummyServiceName.name, expectedSignature
     )
 
     assert(signedHeaders.iterator.contains(Header(Authorization.name.value, expectedAuthorizationHeader)))
@@ -66,14 +66,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     val params: Map[String, String] = Map.empty[String, String] ++ Map("Param2" -> "value2", "Param1" -> "value1")
 
-    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, () => LocalDateTime.of(2015, 8, 30, 12, 36, 0))
+    val signer = RequestSigning(credentials, region, DummyServiceName, PayloadSigning.Signed, () => LocalDateTime.of(2015, 8, 30, 12, 36, 0))
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, params, headers, Stream.empty).unsafeRunSync()
 
     // The signature must match the expected signature
     val expectedSignature = "b97d918cfa904a5beff61c982a1b6f458b799221646efd99d3219ec94cdf2500"
     val expectedAuthorizationHeader = String.format(
       "AWS4-HMAC-SHA256 Credential=%s/20150830/%s/%s/aws4_request, SignedHeaders=host;x-amz-date, Signature=%s",
-      awsAccessKey, region.name, service.name, expectedSignature
+      awsAccessKey, region.name, DummyServiceName.name, expectedSignature
     )
 
     assert(signedHeaders.iterator.contains(Header(Authorization.name.value, expectedAuthorizationHeader)))
@@ -90,14 +90,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, DummyServiceName, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.POST, queryParams, headers, Stream.empty).unsafeRunSync()
 
     // THEN
     // The signature must match the expected signature
     val expectedSignature: String = "ffa9577fe836168407d8a9afce6d75e903de636017cb60bb37f4b094ecfb1c27"
     val expectedAuthorizationHeader: String = format("AWS4-HMAC-SHA256 Credential=%s/20110909/%s/%s/aws4_request, SignedHeaders=date;host, Signature=%s",
-      awsAccessKey, region.name, service.name, expectedSignature)
+      awsAccessKey, region.name, DummyServiceName.name, expectedSignature)
 
     assert(signedHeaders.iterator.contains(Header(Authorization.name.value, expectedAuthorizationHeader)))
     assert(signedHeaders.iterator.contains(fooHost))
@@ -113,14 +113,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(credentials, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentials, region, DummyServiceName, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // THEN
     // The signature must match the expected signature
     val expectedSignature: String = "922abe18f0e78e55d69b34458c61e73134ab710adcb9a3257b638d70e2363ce1"
     val expectedAuthorizationHeader: String = String.format("AWS4-HMAC-SHA256 Credential=%s/20110909/%s/%s/aws4_request, SignedHeaders=host;x-amz-date, Signature=%s",
-      awsAccessKey, region.name, service.name, expectedSignature)
+      awsAccessKey, region.name, DummyServiceName.name, expectedSignature)
 
     assert(signedHeaders.iterator.contains(Header(Authorization.name.value, expectedAuthorizationHeader)))
     assert(signedHeaders.iterator.contains(fooHost))
@@ -136,14 +136,14 @@ class RequestSigningSpec extends FlatSpec with Matchers {
 
     // WHEN
     // The request is signed
-    val signer = RequestSigning(credentialsWithSessionToken, region, service, PayloadSigning.Signed, clock)
+    val signer = RequestSigning(credentialsWithSessionToken, region, DummyServiceName, PayloadSigning.Signed, clock)
     val signedHeaders = signer.signedHeaders[IO]("/", Method.GET, Map.empty[String, String], headers, Stream.empty).unsafeRunSync()
 
     // THEN
     // The signature must match the expected signature
     val expectedSignature: String = "78448a6ffad33b798ea2bb717fe5c3ef849a1b726ed1e692f4b5635b95070fb3"
     val expectedAuthorizationHeader: String = format("AWS4-HMAC-SHA256 Credential=%s/20110909/%s/%s/aws4_request, SignedHeaders=date;host;x-amz-security-token, Signature=%s",
-      awsAccessKey, region.name, service.name, expectedSignature)
+      awsAccessKey, region.name, DummyServiceName.name, expectedSignature)
 
     assert(signedHeaders.iterator.contains(Header(Authorization.name.value, expectedAuthorizationHeader)))
     assert(signedHeaders.iterator.contains(fooHost))

@@ -13,7 +13,7 @@ private [aws4s] case class DeleteObject[F[_]: Effect](region: Region, bucket: Bu
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def serviceName: ServiceName = ServiceName.s3
+  override def serviceName: ServiceName = ServiceName.S3
 
   override def params: List[RenderedOptional[Nothing]] = List.empty
 }

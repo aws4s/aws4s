@@ -17,7 +17,7 @@ private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, Un
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def serviceName: ServiceName = ServiceName.s3
+  override def serviceName: ServiceName = ServiceName.S3
 
   override def params: List[RenderedOptional[Unit]] = List.empty
 }

@@ -11,7 +11,7 @@ import cats.implicits._
 import org.aws4s.ExtraEntityDecoderInstances._
 
 private [dynamodb] abstract class DynamoDbCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
-  override def serviceName: ServiceName = ServiceName.dynamodb
+  override def serviceName: ServiceName = ServiceName.DynamoDb
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   def action: String
