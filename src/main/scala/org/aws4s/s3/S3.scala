@@ -1,11 +1,11 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import org.aws4s._
 import org.http4s.Uri
 import org.http4s.client.Client
 import fs2.Stream
-import ExtraEntityDecoderInstances._
+import org.aws4s.core.ExtraEntityDecoderInstances._
+import org.aws4s.core.{Credentials, Region, Service}
 
 case class S3[F[_]: Effect](client: Client[F], region: Region, credentials: () => Credentials) extends Service[F, Nothing] {
 

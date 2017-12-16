@@ -1,14 +1,14 @@
 package org.aws4s.kms
 
 import cats.effect.Effect
-import io.circe.{Decoder, Json}
 import org.aws4s.s3.PayloadSigning
-import org.aws4s._
 import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
 import org.http4s.circe._
 import org.http4s.headers.{Host, `Content-Type`}
 import cats.implicits._
-import ExtraEntityDecoderInstances._
+import io.circe.{Decoder, Json}
+import org.aws4s.core.{Command, Param, Region, ServiceName}
+import org.aws4s.core.ExtraEntityDecoderInstances._
 
 private [kms] abstract class KmsCommand[F[_]: Effect, A: Decoder] extends Command[F, A, Json] {
 

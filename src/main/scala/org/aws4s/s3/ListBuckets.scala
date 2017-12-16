@@ -1,11 +1,11 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import org.aws4s._
 import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, Uri}
 import cats.implicits._
-import org.aws4s.Param.RenderedOptional
+import org.aws4s.core._
+import org.aws4s.core.Param.RenderedOptional
 
 private [s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess, Unit] {
 

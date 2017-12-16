@@ -4,7 +4,7 @@ import cats.effect.Sync
 import org.http4s.headers.Host
 import org.http4s.{Headers, Method, Request, Uri}
 import fs2.Stream
-import org.aws4s.Region
+import org.aws4s.core.Region
 
 private [s3] object ObjectRequests {
 

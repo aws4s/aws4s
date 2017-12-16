@@ -1,6 +1,6 @@
 package org.aws4s.sqs
 
-import org.aws4s.Param
+import org.aws4s.core.Param
 
 private [sqs] abstract class SqsParam[A: TextParamValue](
   name: String,

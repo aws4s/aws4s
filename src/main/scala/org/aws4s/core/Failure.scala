@@ -1,4 +1,4 @@
-package org.aws4s
+package org.aws4s.core
 
 import cats.Show
 import cats.implicits._

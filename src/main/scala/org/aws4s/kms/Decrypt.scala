@@ -3,8 +3,10 @@ package org.aws4s.kms
 import java.util.Base64
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
-import org.aws4s.Region
+import org.aws4s.core.Param.RenderedOptional
+import org.aws4s.core.Region
+import org.aws4s.core.Param.RenderedOptional
+import org.aws4s.core.Region
 
 private [kms] case class Decrypt[F[_]: Effect](
   region: Region,

@@ -1,7 +1,7 @@
 package org.aws4s.kms
 
 import io.circe.{Encoder, Json}
-import org.aws4s.Param
+import org.aws4s.core.Param
 
 private [kms] abstract class KmsParam[A: Encoder](
   name: String,

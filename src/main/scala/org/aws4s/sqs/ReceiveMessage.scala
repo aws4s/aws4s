@@ -3,8 +3,7 @@ package org.aws4s.sqs
 import cats.effect.Effect
 import org.http4s.EntityDecoder
 import cats.implicits._
-import org.aws4s.Param.RenderedOptional
-import org.aws4s._
+import org.aws4s.core.{ExtraEntityDecoderInstances, Param}
 
 private [sqs] case class ReceiveMessage[F[_]: Effect](
   q:                        Queue,
@@ -14,7 +13,7 @@ private [sqs] case class ReceiveMessage[F[_]: Effect](
   receiveRequestAttemptId:  Option[ReceiveMessage.ReceiveRequestAttemptIdParam],
 ) extends SqsCommand[F, ReceiveMessageSuccess] {
   override def action: String = "ReceiveMessage"
-  override def params: List[RenderedOptional[String]] =
+  override def params: List[Param.RenderedOptional[String]] =
     List(
       maxNumberOfMessages map (_.render),
       visibilityTimeout map (_.render),

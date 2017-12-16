@@ -1,7 +1,7 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.{Credentials, Service}
+import org.aws4s.core.{Credentials, Service}
 import org.http4s.client.Client
 
 case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) extends Service[F, String] {
