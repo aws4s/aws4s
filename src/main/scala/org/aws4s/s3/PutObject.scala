@@ -13,7 +13,7 @@ private [aws4s] case class PutObject[F[_]: Effect](
   name: Uri.Path,
   obj: Stream[F, Byte],
   payloadSigning: PayloadSigning
-) extends Command[F, Unit, Nothing] {
+) extends Command[F, Nothing, Unit] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =
     ObjectRequests.request[F](region, Method.PUT, bucket, name, obj).pure[F]
