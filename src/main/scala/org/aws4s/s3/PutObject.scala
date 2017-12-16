@@ -1,11 +1,11 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import org.aws4s._
 import org.http4s.{Method, Request, Uri}
 import fs2.Stream
 import cats.implicits._
-import org.aws4s.Param.RenderedOptional
+import org.aws4s.core.Param.RenderedOptional
+import org.aws4s.core.{Command, Param, Region, ServiceName}
 
 private [aws4s] case class PutObject[F[_]: Effect](
   region: Region,

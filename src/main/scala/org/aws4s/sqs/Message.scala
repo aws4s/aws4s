@@ -1,6 +1,6 @@
 package org.aws4s.sqs
 
-import org.aws4s.XmlParsing._
+import org.aws4s.core.XmlParsing._
 import cats.implicits._
 
 case class Message(

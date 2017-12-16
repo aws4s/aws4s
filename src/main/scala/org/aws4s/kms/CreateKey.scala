@@ -2,8 +2,8 @@ package org.aws4s.kms
 
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
-import org.aws4s.Region
+import org.aws4s.core.Param.RenderedOptional
+import org.aws4s.core.Region
 
 private [kms] case class CreateKey[F[_]: Effect](
   region:       Region,

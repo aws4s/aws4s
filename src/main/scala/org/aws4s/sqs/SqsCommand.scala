@@ -4,7 +4,7 @@ import cats.effect.Effect
 import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s.s3.PayloadSigning
-import org.aws4s._
+import org.aws4s.core.{Command, Param, Region, ServiceName}
 
 private [sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]] extends Command[F, A, String] {
 

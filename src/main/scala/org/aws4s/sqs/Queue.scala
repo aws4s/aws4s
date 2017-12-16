@@ -1,7 +1,7 @@
 package org.aws4s.sqs
 
 import cats.implicits._
-import org.aws4s.{Failure, Region}
+import org.aws4s.core.{Failure, Region}
 import org.http4s.Uri
 
 case class Queue private(uri: Uri, host: String, region: Region)

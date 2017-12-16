@@ -3,8 +3,8 @@ package org.aws4s.kms
 import java.util.Base64
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
-import org.aws4s.Region
+import org.aws4s.core.Param
+import org.aws4s.core.Region
 
 private [kms] case class Encrypt[F[_]: Effect](
   region: Region,
@@ -14,7 +14,7 @@ private [kms] case class Encrypt[F[_]: Effect](
   grantTokens: Option[GrantTokensParam],
 ) extends KmsCommand[F, EncryptSuccess] {
   override def action: String = "Encrypt"
-  override def params: List[RenderedOptional[Json]] =
+  override def params: List[Param.RenderedOptional[Json]] =
     List(
       Some(plaintext.render),
       Some(keyId.render),

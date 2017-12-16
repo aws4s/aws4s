@@ -1,10 +1,9 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.Param.RenderedOptional
 import org.http4s.EntityDecoder
-import org.aws4s._
-import org.aws4s.XmlParsing._
+import org.aws4s.core.{ExtraEntityDecoderInstances, Param}
+import org.aws4s.core.XmlParsing._
 
 private [sqs] case class SendMessage[F[_]: Effect](
   q: Queue,
@@ -13,7 +12,7 @@ private [sqs] case class SendMessage[F[_]: Effect](
   messageDeduplicationId: Option[SendMessage.MessageDeduplicationIdParam] = None,
 ) extends SqsCommand[F, SendMessageSuccess] {
   override def action: String = "SendMessage"
-  override def params: List[RenderedOptional[String]] =
+  override def params: List[Param.RenderedOptional[String]] =
     List(
       Some(messageBody.render),
       delaySeconds map (_.render),

@@ -2,9 +2,9 @@ package org.aws4s.kms
 
 import cats.effect.Effect
 import io.circe.Json
-import org.aws4s.{Credentials, Region, Service}
+import org.aws4s.core.{Credentials, Region, Service}
 import org.http4s.client.Client
-import org.aws4s.ExtraEntityDecoderInstances._
+import org.aws4s.core.ExtraEntityDecoderInstances._
 import org.aws4s.kms.CreateKey.DescriptionParam
 import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 

@@ -1,7 +1,7 @@
 package org.aws4s.kms
 
 import io.circe.Decoder
-import org.aws4s.Arn
+import org.aws4s.core.Arn
 
 case class KeyMetadata(
   arn: Arn,

@@ -3,10 +3,10 @@ package org.aws4s.kms
 import java.time.Instant
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
-import org.aws4s.Region
+import org.aws4s.core.Param
+import org.aws4s.core.Region
 import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
-import org.aws4s.ExtraCirceDecoders._
+import org.aws4s.core.ExtraCirceDecoders._
 
 private [kms] case class ScheduleKeyDeletion[F[_]: Effect](
   region: Region,
@@ -14,7 +14,7 @@ private [kms] case class ScheduleKeyDeletion[F[_]: Effect](
   pendingWindowInDays: Option[PendingWindowInDaysParam],
 ) extends KmsCommand[F, ScheduleKeyDeletionSuccess] {
   override def action: String = "ScheduleKeyDeletion"
-  override def params: List[RenderedOptional[Json]] =
+  override def params: List[Param.RenderedOptional[Json]] =
     List(
       Some(keyId.render),
       pendingWindowInDays map (_.render),
