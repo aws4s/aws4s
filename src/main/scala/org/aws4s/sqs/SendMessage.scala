@@ -6,11 +6,11 @@ import org.http4s.EntityDecoder
 import org.aws4s._
 import org.aws4s.XmlParsing._
 
-private [sqs] case class SendMessage[F[_]: Effect](
-  q: Queue,
-  messageBody:            SendMessage.MessageBodyParam,
-  delaySeconds:           Option[SendMessage.DelaySecondsParam] = None,
-  messageDeduplicationId: Option[SendMessage.MessageDeduplicationIdParam] = None,
+private[sqs] case class SendMessage[F[_]: Effect](
+    q: Queue,
+    messageBody: SendMessage.MessageBodyParam,
+    delaySeconds: Option[SendMessage.DelaySecondsParam] = None,
+    messageDeduplicationId: Option[SendMessage.MessageDeduplicationIdParam] = None,
 ) extends SqsCommand[F, SendMessageSuccess] {
   override def action: String = "SendMessage"
   override def params: List[RenderedOptional[String]] =
@@ -21,16 +21,16 @@ private [sqs] case class SendMessage[F[_]: Effect](
     )
 }
 
-private [sqs] object SendMessage {
-  case class MessageBodyParam(value: String) extends SqsParam[String]("MessageBody", _ => None)
-  case class DelaySecondsParam(value: Int) extends SqsParam[Int]("DelaySeconds", n => if (n >= 0 && n <= 900) None else Some("not in [0,900]"))
+private[sqs] object SendMessage {
+  case class MessageBodyParam(value: String)                            extends SqsParam[String]("MessageBody", _ => None)
+  case class DelaySecondsParam(value: Int)                              extends SqsParam[Int]("DelaySeconds", n => if (n >= 0 && n <= 900) None else Some("not in [0,900]"))
   case class MessageDeduplicationIdParam(value: MessageDeduplicationId) extends SqsParam[MessageDeduplicationId]("MessageDeduplicationId", _ => None)
 }
 
 case class SendMessageSuccess(
-  messageId:              MessageId,
-  md5OfMessageBody:       String,
-  sequenceNumber:         Option[SequenceNumber]
+    messageId: MessageId,
+    md5OfMessageBody: String,
+    sequenceNumber: Option[SequenceNumber]
 )
 
 object SendMessageSuccess {

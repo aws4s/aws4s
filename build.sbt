@@ -1,4 +1,3 @@
-
 name := "aws4s"
 organization := "org.aws4s"
 scalaVersion := "2.12.4"
@@ -17,8 +16,8 @@ scalacOptions in (Compile, doc) ++= Seq(
   "-no-link-warnings" // Suppresses problems with Scaladoc
 )
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.4")
+addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
 enablePlugins(TutPlugin)
 
 val http4sVersion     = "0.18.0-M6"
@@ -28,12 +27,12 @@ val scalatestVersion  = "3.0.4"
 val circeVersion      = "0.9.0-M2"
 
 libraryDependencies ++= Seq(
-  "org.http4s"     %% "http4s-client"          % http4sVersion,
-  "org.http4s"     %% "http4s-circe"           % http4sVersion,
-  "org.http4s"     %% "http4s-scala-xml"       % http4sVersion,
-  "io.circe"       %% "circe-core"             % circeVersion,
-  "org.scalatest"  %% "scalatest"              % scalatestVersion % Test,
-  "org.http4s"     %% "http4s-blaze-client"    % http4sVersion    % Test,
+  "org.http4s"    %% "http4s-client"       % http4sVersion,
+  "org.http4s"    %% "http4s-circe"        % http4sVersion,
+  "org.http4s"    %% "http4s-scala-xml"    % http4sVersion,
+  "io.circe"      %% "circe-core"          % circeVersion,
+  "org.scalatest" %% "scalatest"           % scalatestVersion % Test,
+  "org.http4s"    %% "http4s-blaze-client" % http4sVersion % Test,
 )
 
 publishTo := Some(
@@ -54,5 +53,5 @@ scmInfo := Some(
   )
 )
 developers := List(
-  Developer(id="amrhassan", name="Amr Hassan", email="amr.hassan@gmail.com", url=url("http://amrhassan.info"))
+  Developer(id = "amrhassan", name = "Amr Hassan", email = "amr.hassan@gmail.com", url = url("http://amrhassan.info"))
 )

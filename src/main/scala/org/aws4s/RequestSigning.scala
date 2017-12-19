@@ -18,10 +18,10 @@ import org.http4s.headers.{Authorization, Date}
   * Based on https://github.com/ticofab/aws-request-signer,
   * inspired by: https://github.com/inreachventures/aws-signing-request-interceptor
   */
-private [aws4s] object RequestSigning {
+private[aws4s] object RequestSigning {
 
   private def sha256[F[_]: Sync](payload: Stream[F, Byte]): F[Array[Byte]] =
-      payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
+    payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
 
   private def sha256(payload: Array[Byte]): Array[Byte] = {
     val md: MessageDigest = MessageDigest.getInstance("SHA-256")
@@ -35,8 +35,7 @@ private [aws4s] object RequestSigning {
   }
 
   private def renderCanonicalQueryString(queryParams: Map[String, String]): String =
-    queryParams
-      .toSeq
+    queryParams.toSeq
       .sortBy(_._1)
       .map({ case (k, v) => k + "=" + URLEncoder.encode(v, StandardCharsets.UTF_8.toString) })
       .mkString("&")
@@ -48,8 +47,7 @@ private [aws4s] object RequestSigning {
   }
 
   private def renderCanonicalHeaders(headers: Headers): String =
-    headers
-      .toList
+    headers.toList
       .sortBy(_.name.value.toLowerCase)
       .map(h => s"${h.name.value.toLowerCase}:${h.value}\n")
       .mkString
@@ -66,9 +64,9 @@ private [aws4s] object RequestSigning {
   private def sign(stringToSign: String, now: LocalDateTime, credentials: Credentials, region: Region, service: ServiceName): String = {
 
     val key: Array[Byte] = {
-      val kSecret: Array[Byte] = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
-      val kDate: Array[Byte] = hmacSha256(now.format(DateTimeFormatter.BASIC_ISO_DATE), kSecret)
-      val kRegion: Array[Byte] = hmacSha256(region.name, kDate)
+      val kSecret: Array[Byte]  = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
+      val kDate: Array[Byte]    = hmacSha256(now.format(DateTimeFormatter.BASIC_ISO_DATE), kSecret)
+      val kRegion: Array[Byte]  = hmacSha256(region.name, kDate)
       val kService: Array[Byte] = hmacSha256(service.name, kRegion)
       hmacSha256("aws4_request", kService)
     }
@@ -77,12 +75,12 @@ private [aws4s] object RequestSigning {
   }
 }
 
-private [aws4s] case class RequestSigning(
-  credentials: () => Credentials,
-  region: Region,
-  service: ServiceName,
-  payloadSigning: PayloadSigning,
-  clock: () => LocalDateTime
+private[aws4s] case class RequestSigning(
+    credentials: () => Credentials,
+    region: Region,
+    service: ServiceName,
+    payloadSigning: PayloadSigning,
+    clock: () => LocalDateTime
 ) {
 
   import RequestSigning._
@@ -90,14 +88,10 @@ private [aws4s] case class RequestSigning(
   def signedHeaders[F[_]: Sync](req: Request[F]): F[Headers] =
     signedHeaders(req.uri.path, req.method, req.params, req.headers, req.body)
 
-  def signedHeaders[F[_]: Sync](path: Uri.Path,
-                       method: Method,
-                       queryParams: Map[String, String],
-                       headers: Headers,
-                       payload: Stream[F, Byte]): F[Headers] = {
+  def signedHeaders[F[_]: Sync](path: Uri.Path, method: Method, queryParams: Map[String, String], headers: Headers, payload: Stream[F, Byte]): F[Headers] = {
 
     val now: LocalDateTime = clock()
-    val credentialsNow = credentials()
+    val credentialsNow     = credentials()
 
     val extraSecurityHeaders: Headers =
       Headers(credentialsNow.sessionToken.toList map xAmzSecurityTokenHeader)
@@ -116,7 +110,6 @@ private [aws4s] case class RequestSigning(
       }
 
     sha256Payload map { payloadHash =>
-
       val canonicalRequest =
         List(
           method,
@@ -146,9 +139,9 @@ private [aws4s] case class RequestSigning(
 
       val authorizationHeaderValue =
         "AWS4-HMAC-SHA256 Credential=" +
-        credentialsNow.accessKey + "/" + credentialScope +
-        ", SignedHeaders=" + signedHeaderKeys +
-        ", Signature=" + signature
+          credentialsNow.accessKey + "/" + credentialScope +
+          ", SignedHeaders=" + signedHeaderKeys +
+          ", Signature=" + signature
 
       val payloadChecksumHeader: Header =
         payloadSigning match {

@@ -15,4 +15,3 @@ object AttributeType {
       case Binary => "B"
     }
 }
-

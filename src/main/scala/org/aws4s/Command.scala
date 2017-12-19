@@ -7,7 +7,7 @@ import cats.implicits._
 import org.http4s.client.Client
 
 /** An AWS command that has parameter values rendered as [[A]] and when ran results in [[R]] */
-private [aws4s] abstract class Command[F[_]: Effect, A, R: EntityDecoder[F, ?]] {
+private[aws4s] abstract class Command[F[_]: Effect, A, R: EntityDecoder[F, ?]] {
 
   /** The request that will be sent to AWS given the rendered input params */
   def generateRequest(validRenderedParams: List[Param.Rendered[A]]): F[Request[F]]
@@ -39,10 +39,10 @@ private [aws4s] abstract class Command[F[_]: Effect, A, R: EntityDecoder[F, ?]] 
     }
 
   @inline private final def finalRequest(credentials: () => Credentials): F[Request[F]] = {
-    val renderedParams: Either[Failure, List[Param.Rendered[A]]] = params.collect({ case Some(p) => p}).sequence
+    val renderedParams: Either[Failure, List[Param.Rendered[A]]] = params.collect({ case Some(p) => p }).sequence
     val request: F[Request[F]] = renderedParams match {
       case Right(validParams) => generateRequest(validParams)
-      case Left(err) => err.asInstanceOf[Throwable].raiseError[F, Request[F]]
+      case Left(err)          => err.asInstanceOf[Throwable].raiseError[F, Request[F]]
     }
     for {
       r <- request

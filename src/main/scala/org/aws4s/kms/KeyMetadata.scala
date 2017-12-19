@@ -4,8 +4,8 @@ import io.circe.Decoder
 import org.aws4s.Arn
 
 case class KeyMetadata(
-  arn: Arn,
-  keyId: KeyId,
+    arn: Arn,
+    keyId: KeyId,
 )
 
 object KeyMetadata {

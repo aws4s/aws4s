@@ -6,7 +6,7 @@ case class AttributeDefinition(attributeName: String, attributeType: AttributeTy
 
 object AttributeDefinition {
   implicit val encoder: Encoder[AttributeDefinition] =
-    Encoder.forProduct2("AttributeName", "AttributeType") {
-      ad => (ad.attributeName, ad.attributeType)
+    Encoder.forProduct2("AttributeName", "AttributeType") { ad =>
+      (ad.attributeName, ad.attributeType)
     }
 }
