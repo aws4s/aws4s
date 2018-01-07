@@ -21,7 +21,7 @@ import org.http4s.headers.{Authorization, Date}
 private [aws4s] object RequestSigning {
 
   private def sha256[F[_]: Sync](payload: Stream[F, Byte]): F[Array[Byte]] =
-      payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
+    payload.chunks.compile.fold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
 
   private def sha256(payload: Array[Byte]): Array[Byte] = {
     val md: MessageDigest = MessageDigest.getInstance("SHA-256")
