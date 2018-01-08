@@ -11,7 +11,7 @@ import org.aws4s.Param.RenderedOptional
 private[aws4s] case class GetObject[F[_]: Effect](
     region: Region,
     bucket: Bucket,
-    name: Uri.Path
+    name:   Uri.Path
 ) extends Command[F, Nothing, Stream[F, Byte]] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =

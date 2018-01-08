@@ -6,7 +6,7 @@ import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
 
 private[kms] case class CreateKey[F[_]: Effect](
-    region: Region,
+    region:      Region,
     description: Option[CreateKey.DescriptionParam],
 ) extends KmsCommand[F, CreateKeySuccess] {
   override val action: String = "CreateKey"

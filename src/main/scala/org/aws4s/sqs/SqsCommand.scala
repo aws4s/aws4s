@@ -9,7 +9,7 @@ import org.aws4s._
 private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command[F, String, R] {
 
   def action: String
-  def q: Queue
+  def q:      Queue
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[String]]): F[Request[F]] = {
     val body = validRenderedParams.foldLeft(UrlForm())((form, newPair) => form + newPair) + ("Action" -> action)
@@ -17,8 +17,8 @@ private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] ext
   }
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
-  override def serviceName: ServiceName       = ServiceName.Sqs
-  override def region: Region                 = q.region
+  override def serviceName: ServiceName = ServiceName.Sqs
+  override def region: Region = q.region
 
   def params: List[Param.RenderedOptional[String]]
 }

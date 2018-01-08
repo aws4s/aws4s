@@ -21,7 +21,7 @@ import org.http4s.headers.{Authorization, Date}
 private[aws4s] object RequestSigning {
 
   private def sha256[F[_]: Sync](payload: Stream[F, Byte]): F[Array[Byte]] =
-    payload.chunks.runFold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
+    payload.chunks.compile.fold(MessageDigest.getInstance("SHA-256"))((md, chunk) => { md.update(chunk.toArray); md }).map(_.digest)
 
   private def sha256(payload: Array[Byte]): Array[Byte] = {
     val md: MessageDigest = MessageDigest.getInstance("SHA-256")
@@ -64,9 +64,9 @@ private[aws4s] object RequestSigning {
   private def sign(stringToSign: String, now: LocalDateTime, credentials: Credentials, region: Region, service: ServiceName): String = {
 
     val key: Array[Byte] = {
-      val kSecret: Array[Byte]  = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
-      val kDate: Array[Byte]    = hmacSha256(now.format(DateTimeFormatter.BASIC_ISO_DATE), kSecret)
-      val kRegion: Array[Byte]  = hmacSha256(region.name, kDate)
+      val kSecret:  Array[Byte]  = ("AWS4" + credentials.secretKey).getBytes(StandardCharsets.UTF_8)
+      val kDate:    Array[Byte]    = hmacSha256(now.format(DateTimeFormatter.BASIC_ISO_DATE), kSecret)
+      val kRegion:  Array[Byte]  = hmacSha256(region.name, kDate)
       val kService: Array[Byte] = hmacSha256(service.name, kRegion)
       hmacSha256("aws4_request", kService)
     }
@@ -76,11 +76,11 @@ private[aws4s] object RequestSigning {
 }
 
 private[aws4s] case class RequestSigning(
-    credentials: () => Credentials,
-    region: Region,
-    service: ServiceName,
+    credentials:    () => Credentials,
+    region:         Region,
+    service:        ServiceName,
     payloadSigning: PayloadSigning,
-    clock: () => LocalDateTime
+    clock:          () => LocalDateTime
 ) {
 
   import RequestSigning._

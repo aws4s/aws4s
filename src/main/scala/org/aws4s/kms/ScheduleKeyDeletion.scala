@@ -9,8 +9,8 @@ import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 import org.aws4s.ExtraCirceDecoders._
 
 private[kms] case class ScheduleKeyDeletion[F[_]: Effect](
-    region: Region,
-    keyId: KeyIdParam,
+    region:              Region,
+    keyId:               KeyIdParam,
     pendingWindowInDays: Option[PendingWindowInDaysParam],
 ) extends KmsCommand[F, ScheduleKeyDeletionSuccess] {
   override def action: String = "ScheduleKeyDeletion"

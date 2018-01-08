@@ -17,7 +17,7 @@ class S3SmokeTest extends SmokeTest {
 
     val all = for {
       _        <- s3.putObject(bucket, name, obj, PayloadSigning.Signed)
-      readBack <- s3.getObject(bucket, name) >>= (_.runLog.map(_.toArray))
+      readBack <- s3.getObject(bucket, name) >>= (_.compile.toVector.map(_.toArray))
       _        <- s3.deleteObject(bucket, name)
     } yield new String(readBack)
 

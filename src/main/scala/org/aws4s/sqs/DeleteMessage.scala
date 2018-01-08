@@ -4,7 +4,7 @@ import cats.effect.Effect
 import org.aws4s.Param.RenderedOptional
 
 private[sqs] case class DeleteMessage[F[_]: Effect](
-    q: Queue,
+    q:             Queue,
     receiptHandle: DeleteMessage.ReceiptHandleParam
 ) extends SqsCommand[F, Unit] {
   override val action = "DeleteMessage"

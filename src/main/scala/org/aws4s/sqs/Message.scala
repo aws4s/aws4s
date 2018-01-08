@@ -4,10 +4,10 @@ import org.aws4s.XmlParsing._
 import cats.implicits._
 
 case class Message(
-    id: MessageId,
-    md5OfBody: String,
-    receiptHandle: ReceiptHandle,
-    body: String,
+  id:             MessageId,
+  md5OfBody:      String,
+  receiptHandle:  ReceiptHandle,
+  body:           String,
 )
 
 object Message {
