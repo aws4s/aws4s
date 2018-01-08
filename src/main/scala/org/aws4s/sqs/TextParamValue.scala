@@ -10,9 +10,9 @@ private[sqs] trait TextParamValue[A] {
 
 private[sqs] object TextParamValue {
   implicit val paramValueString: TextParamValue[String] = fromShow
-  implicit val paramValueInt: TextParamValue[Int]       = fromShow
+  implicit val paramValueInt:    TextParamValue[Int]    = fromShow
 
-  def fromShow[A: Show]: TextParamValue[A]           = instance(_.show)
+  def fromShow[A: Show]: TextParamValue[A] = instance(_.show)
   def instance[A](f: A => String): TextParamValue[A] = f(_)
 
   implicit val contravariant: Contravariant[TextParamValue] =

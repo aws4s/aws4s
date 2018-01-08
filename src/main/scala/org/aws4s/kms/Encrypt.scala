@@ -7,10 +7,10 @@ import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
 
 private[kms] case class Encrypt[F[_]: Effect](
-    region: Region,
-    keyId: KeyIdParam,
-    plaintext: PlaintextParam,
-    context: Option[EncryptionContextParam],
+    region:      Region,
+    keyId:       KeyIdParam,
+    plaintext:   PlaintextParam,
+    context:     Option[EncryptionContextParam],
     grantTokens: Option[GrantTokensParam],
 ) extends KmsCommand[F, EncryptSuccess] {
   override def action: String = "Encrypt"

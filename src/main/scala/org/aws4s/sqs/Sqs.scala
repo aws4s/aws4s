@@ -7,9 +7,9 @@ import org.http4s.client.Client
 case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credentials) extends Service[F, String] {
 
   def sendMessage(
-      q: Queue,
-      messageBody: String,
-      delaySeconds: Option[Int] = None,
+      q:                      Queue,
+      messageBody:            String,
+      delaySeconds:           Option[Int] = None,
       messageDeduplicationId: Option[MessageDeduplicationId] = None
   ): F[SendMessageSuccess] = run {
     SendMessage(
@@ -21,10 +21,10 @@ case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credential
   }
 
   def receiveMessage(
-      q: Queue,
-      maxNumberOfMessages: Option[Int] = None,
-      visibilityTimeout: Option[Int] = None,
-      waitTimeSeconds: Option[Int] = None,
+      q:                       Queue,
+      maxNumberOfMessages:     Option[Int] = None,
+      visibilityTimeout:       Option[Int] = None,
+      waitTimeSeconds:         Option[Int] = None,
       receiveRequestAttemptId: Option[ReceiveRequestAttemptId] = None,
   ): F[ReceiveMessageSuccess] = run {
     ReceiveMessage(
@@ -37,7 +37,7 @@ case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credential
   }
 
   def deleteMessage(
-      q: Queue,
+      q:             Queue,
       receiptHandle: ReceiptHandle,
   ): F[Unit] = run {
     DeleteMessage(
