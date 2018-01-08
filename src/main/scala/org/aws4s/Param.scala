@@ -1,7 +1,7 @@
 package org.aws4s
 
 /** A command parameter of value [[A]] that gets rendered to [[B]] when serializing a command into an HTTP request */
-private [aws4s] abstract class Param[A, B](name: String, validator: A => Option[String], renderValue: A => B) {
+private[aws4s] abstract class Param[A, B](name: String, validator: A => Option[String], renderValue: A => B) {
 
   def value: A
 

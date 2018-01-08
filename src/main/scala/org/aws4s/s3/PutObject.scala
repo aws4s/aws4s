@@ -7,12 +7,12 @@ import fs2.Stream
 import cats.implicits._
 import org.aws4s.Param.RenderedOptional
 
-private [aws4s] case class PutObject[F[_]: Effect](
-  region: Region,
-  bucket: Bucket,
-  name: Uri.Path,
-  obj: Stream[F, Byte],
-  payloadSigning: PayloadSigning
+private[aws4s] case class PutObject[F[_]: Effect](
+    region:         Region,
+    bucket:         Bucket,
+    name:           Uri.Path,
+    obj:            Stream[F, Byte],
+    payloadSigning: PayloadSigning
 ) extends Command[F, Unit, Nothing] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =

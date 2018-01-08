@@ -8,10 +8,10 @@ import org.aws4s.Region
 import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 import org.aws4s.ExtraCirceDecoders._
 
-private [kms] case class ScheduleKeyDeletion[F[_]: Effect](
-  region: Region,
-  keyId: KeyIdParam,
-  pendingWindowInDays: Option[PendingWindowInDaysParam],
+private[kms] case class ScheduleKeyDeletion[F[_]: Effect](
+    region:              Region,
+    keyId:               KeyIdParam,
+    pendingWindowInDays: Option[PendingWindowInDaysParam],
 ) extends KmsCommand[F, ScheduleKeyDeletionSuccess] {
   override def action: String = "ScheduleKeyDeletion"
   override def params: List[RenderedOptional[Json]] =
@@ -21,13 +21,13 @@ private [kms] case class ScheduleKeyDeletion[F[_]: Effect](
     )
 }
 
-private [kms] object ScheduleKeyDeletion {
+private[kms] object ScheduleKeyDeletion {
   case class PendingWindowInDaysParam(value: Int) extends KmsParam[Int]("PendingWindowInDays", n => if (n < 7 || n > 30) Some("not in [7,30]") else None)
 }
 
 case class ScheduleKeyDeletionSuccess(
-  keyId:        KeyId,
-  deletionDate: Instant,
+    keyId:        KeyId,
+    deletionDate: Instant,
 )
 
 object ScheduleKeyDeletionSuccess {
