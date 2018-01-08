@@ -6,7 +6,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 
 abstract class SmokeTest extends AsyncFlatSpec with Matchers {
 
-  final val httpClient = Http1Client[IO]().unsafeRunSync()
+  final val httpClient = Http1Client[IO]()
   final val region = Region.`eu-central-1`
   final val credentials = () => Credentials(getEnvOrDie("AWS_ACCESS_KEY"), getEnvOrDie("AWS_SECRET_KEY"))
 

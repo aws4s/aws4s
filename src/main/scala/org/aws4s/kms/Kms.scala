@@ -8,13 +8,13 @@ import org.aws4s.ExtraEntityDecoderInstances._
 import org.aws4s.kms.CreateKey.DescriptionParam
 import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 
-case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () => Credentials) extends Service[F, Json] {
+case class Kms[F[_]: Effect](client: F[Client[F]], region: Region, credentials: () => Credentials) extends Service[F, Json] {
 
   def encrypt(
-    keyId: KeyId,
-    plaintext: Array[Byte],
-    context: Option[Map[String, String]] = None,
-    grantTokens: Option[GrantTokens] = None,
+      keyId: KeyId,
+      plaintext: Array[Byte],
+      context: Option[Map[String, String]] = None,
+      grantTokens: Option[GrantTokens] = None,
   ): F[EncryptSuccess] = run {
     Encrypt(
       region,
@@ -26,9 +26,9 @@ case class Kms[F[_]: Effect](client: Client[F], region: Region, credentials: () 
   }
 
   def decrypt(
-    ciphertext: Array[Byte],
-    context: Option[Map[String, String]] = None,
-    grantTokens: Option[GrantTokens] = None,
+      ciphertext: Array[Byte],
+      context: Option[Map[String, String]] = None,
+      grantTokens: Option[GrantTokens] = None,
   ): F[DecryptSuccess] = run {
     Decrypt(
       region,

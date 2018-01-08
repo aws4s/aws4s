@@ -4,13 +4,13 @@ import cats.effect.Effect
 import org.aws4s.{Credentials, Service}
 import org.http4s.client.Client
 
-case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) extends Service[F, String] {
+case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credentials) extends Service[F, String] {
 
   def sendMessage(
-    q:                        Queue,
-    messageBody:              String,
-    delaySeconds:             Option[Int] = None,
-    messageDeduplicationId:   Option[MessageDeduplicationId] = None
+      q: Queue,
+      messageBody: String,
+      delaySeconds: Option[Int] = None,
+      messageDeduplicationId: Option[MessageDeduplicationId] = None
   ): F[SendMessageSuccess] = run {
     SendMessage(
       q,
@@ -21,11 +21,11 @@ case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) 
   }
 
   def receiveMessage(
-    q:                        Queue,
-    maxNumberOfMessages:      Option[Int] = None,
-    visibilityTimeout:        Option[Int] = None,
-    waitTimeSeconds:          Option[Int] = None,
-    receiveRequestAttemptId:  Option[ReceiveRequestAttemptId] = None,
+      q: Queue,
+      maxNumberOfMessages: Option[Int] = None,
+      visibilityTimeout: Option[Int] = None,
+      waitTimeSeconds: Option[Int] = None,
+      receiveRequestAttemptId: Option[ReceiveRequestAttemptId] = None,
   ): F[ReceiveMessageSuccess] = run {
     ReceiveMessage(
       q,
@@ -37,8 +37,8 @@ case class Sqs[F[_]: Effect](client: Client[F], credentials: () => Credentials) 
   }
 
   def deleteMessage(
-    q:             Queue,
-    receiptHandle: ReceiptHandle,
+      q: Queue,
+      receiptHandle: ReceiptHandle,
   ): F[Unit] = run {
     DeleteMessage(
       q,
