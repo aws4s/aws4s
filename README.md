@@ -24,11 +24,11 @@ also welcome.
 ```scala
 import cats.effect.IO
 import org.aws4s.Credentials
-import org.aws4s.sqs.{Queue, SendMessageSuccess, Sqs}
-import org.http4s.client.blaze.PooledHttp1Client    // You'll need the `http4s-blaze-client for that
+import org.aws4s.sqs.{Queue, Sqs}
+import org.http4s.client.blaze.Http1Client // You'll need the `http4s-blaze-client` dependency for that
 
 val credentials = () => Credentials("ACCESS_KEY_HERE", "SECRET_KEY_HERE")
-val httpClient = PooledHttp1Client[IO]()
+val httpClient = Http1Client[IO]()
 
 val sqs = Sqs(httpClient, credentials)
 
