@@ -26,7 +26,7 @@ private[kms] object ScheduleKeyDeletion {
 }
 
 case class ScheduleKeyDeletionSuccess(
-    keyId: KeyId,
+    keyId:        KeyId,
     deletionDate: Instant,
 )
 

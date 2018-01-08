@@ -6,7 +6,7 @@ import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
 
 private[dynamodb] case class CreateTable[F[_]: Effect](
-    region: Region,
+    region:             Region,
     attributeDefitions: List[AttributeDefinition],
 ) extends DynamoDbCommand[F, CreateTableSuccess] {
   override def action: String = "CreateTable"

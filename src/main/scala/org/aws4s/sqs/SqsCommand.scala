@@ -17,8 +17,8 @@ private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] ext
   }
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
-  override def serviceName: ServiceName = ServiceName.Sqs
-  override def region: Region = q.region
+  override def serviceName:    ServiceName    = ServiceName.Sqs
+  override def region:         Region         = q.region
 
   def params: List[Param.RenderedOptional[String]]
 }

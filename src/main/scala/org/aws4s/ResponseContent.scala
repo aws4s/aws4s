@@ -10,8 +10,8 @@ private[aws4s] sealed trait ResponseContent {
 }
 
 private[aws4s] case class XmlContent(elem:    scala.xml.Elem) extends ResponseContent
-private[aws4s] case class StringContent(text: String)      extends ResponseContent
-private[aws4s] case object NoContent                       extends ResponseContent
+private[aws4s] case class StringContent(text: String) extends ResponseContent
+private[aws4s] case object NoContent extends ResponseContent
 
 private[aws4s] object ResponseContent {
   implicit def entityDecoder[F[_]: Effect]: EntityDecoder[F, ResponseContent] =

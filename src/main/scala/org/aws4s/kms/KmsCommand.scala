@@ -12,14 +12,14 @@ import ExtraEntityDecoderInstances._
 
 private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
 
-  override def serviceName: ServiceName = ServiceName.Kms
+  override def serviceName:    ServiceName    = ServiceName.Kms
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   def action: String
   def region: Region
 
   override def generateRequest(validParams: List[Param.Rendered[Json]]): F[Request[F]] = {
-    val host          = s"kms.${region.name}.amazonaws.com"
+    val host = s"kms.${region.name}.amazonaws.com"
     val payload: Json = Json.obj(validParams: _*)
     Request[F](
       Method.POST,

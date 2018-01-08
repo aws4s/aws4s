@@ -19,7 +19,7 @@ case class ErrorResponse(status: Status, errorType: String, code: String, messag
    """.stripMargin
     )
 case class UnexpectedResponse(content: String) extends Failure(s"Unexpected response: $content")
-case class InvalidParam(content:       String)       extends Failure(s"Invalid param: $content")
+case class InvalidParam(content:       String) extends Failure(s"Invalid param: $content")
 
 object Failure {
 
