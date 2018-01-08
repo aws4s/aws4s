@@ -12,9 +12,9 @@ class SqsSmokeTest extends SmokeTest {
     val message = "Sup"
 
     val all = for {
-      _        <- sqs.sendMessage(q, message)
+      _ <- sqs.sendMessage(q, message)
       messages <- sqs.receiveMessage(q, Some(10)) map (_.messages)
-      _        <- messages.traverse(m => sqs.deleteMessage(q, m.receiptHandle))
+      _ <- messages.traverse(m => sqs.deleteMessage(q, m.receiptHandle))
     } yield messages
 
     all.unsafeToFuture() map (_.map(_.body) shouldBe List(message))

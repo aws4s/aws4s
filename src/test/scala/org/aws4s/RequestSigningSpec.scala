@@ -20,7 +20,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
   val region         = Region("us-east-1")
   object DummyServiceName extends ServiceName("service")
 
-  val sessionToken: String           = "AKIDEXAMPLESESSION"
+  val sessionToken: String = "AKIDEXAMPLESESSION"
   val credentialsNowWithSessionToken = Credentials(awsAccessKey, awsSecretKey, Some(sessionToken))
   val credentialsWithSessionToken    = () => credentialsNowWithSessionToken
 
@@ -92,7 +92,7 @@ class RequestSigningSpec extends FlatSpec with Matchers {
     val date = "Mon, 09 Sep 2011 23:36:00 GMT"
 
     val queryParams: Map[String, String] = Map.empty[String, String] ++ Map("foo" -> "bar")
-    val headers                          = Headers(Header("Date", date), fooHost)
+    val headers = Headers(Header("Date", date), fooHost)
 
     // WHEN
     // The request is signed

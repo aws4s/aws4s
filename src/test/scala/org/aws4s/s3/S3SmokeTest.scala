@@ -16,9 +16,9 @@ class S3SmokeTest extends SmokeTest {
     val obj    = Stream.eval(IO(data.getBytes.iterator)) >>= (Stream.fromIterator[IO, Byte](_))
 
     val all = for {
-      _        <- s3.putObject(bucket, name, obj, PayloadSigning.Signed)
+      _ <- s3.putObject(bucket, name, obj, PayloadSigning.Signed)
       readBack <- s3.getObject(bucket, name) >>= (_.compile.toVector.map(_.toArray))
-      _        <- s3.deleteObject(bucket, name)
+      _ <- s3.deleteObject(bucket, name)
     } yield new String(readBack)
 
     all.unsafeToFuture() map (_ shouldBe data)
