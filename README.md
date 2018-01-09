@@ -52,4 +52,4 @@ action.unsafeRunSync()
 Unstable API until `1.0.0`, then semantic versioning from there on.
 
 ## Acknowledgements ##
-Request signing logic is based on [the project](https://github.com/ticofab/aws-request-signer).
+Request signing logic is adapted from the code in [this project](https://github.com/ticofab/aws-request-signer).
