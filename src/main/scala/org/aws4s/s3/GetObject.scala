@@ -12,14 +12,14 @@ private[aws4s] case class GetObject[F[_]: Effect](
     region: Region,
     bucket: Bucket,
     name:   Uri.Path
-) extends Command[F, Stream[F, Byte], Nothing] {
+) extends Command[F, Nothing, Stream[F, Byte]] {
 
   override def generateRequest(validRenderedParams: List[Param.Rendered[Nothing]]): F[Request[F]] =
     ObjectRequests.request[F](region, Method.GET, bucket, name).pure[F]
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def serviceName: ServiceName = ServiceName.s3
+  override def serviceName: ServiceName = ServiceName.S3
 
   override def params: List[RenderedOptional[Nothing]] = List.empty
 }

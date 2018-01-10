@@ -6,7 +6,7 @@ import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s.s3.PayloadSigning
 import org.aws4s._
 
-private[sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]] extends Command[F, A, String] {
+private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command[F, String, R] {
 
   def action: String
   def q:      Queue
@@ -17,7 +17,7 @@ private[sqs] abstract class SqsCommand[F[_]: Effect, A: EntityDecoder[F, ?]] ext
   }
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
-  override def serviceName:    ServiceName    = ServiceName.sqs
+  override def serviceName:    ServiceName    = ServiceName.Sqs
   override def region:         Region         = q.region
 
   def params: List[Param.RenderedOptional[String]]
