@@ -7,7 +7,7 @@ import org.http4s.{EntityDecoder, Headers, Method, Request, Uri}
 import cats.implicits._
 import org.aws4s.Param.RenderedOptional
 
-private[s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, ListBucketsSuccess, Unit] {
+private[s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, Unit, ListBucketsSuccess] {
 
   override val region = Region.`us-east-1`
   private val host    = s"s3.amazonaws.com"
@@ -17,7 +17,7 @@ private[s3] case class ListBucketsCommand[F[_]: Effect]() extends Command[F, Lis
 
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
-  override def serviceName: ServiceName = ServiceName.s3
+  override def serviceName: ServiceName = ServiceName.S3
 
   override def params: List[RenderedOptional[Unit]] = List.empty
 }

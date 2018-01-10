@@ -10,9 +10,9 @@ import org.http4s.headers.{Host, `Content-Type`}
 import cats.implicits._
 import ExtraEntityDecoderInstances._
 
-private[kms] abstract class KmsCommand[F[_]: Effect, A: Decoder] extends Command[F, A, Json] {
+private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
 
-  override def serviceName:    ServiceName    = ServiceName.kms
+  override def serviceName:    ServiceName    = ServiceName.Kms
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   def action: String
