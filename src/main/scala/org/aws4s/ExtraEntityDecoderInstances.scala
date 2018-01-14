@@ -21,6 +21,6 @@ private[aws4s] object ExtraEntityDecoderInstances {
       EitherT.fromEither(result.toRight(InvalidMessageBodyFailure("Response was not as expected")))
     }
 
-  implicit def entityDecoder[F[_]: Effect, A: Decoder]: EntityDecoder[F, A] =
+  implicit def circeEntityDecoder[F[_]: Effect, A: Decoder]: EntityDecoder[F, A] =
     org.http4s.circe.jsonOf[F, A]
 }

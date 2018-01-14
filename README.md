@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
 - SQS: (`sendMessage`, `receiveMessage`, `deleteMessage`)
 - S3: (`listBuckets`, `putObject`, `deleteObject`, `getObject`)
 - KMS: (`encrypt`, `decrypt`, `createKey`, `scheduleKeyDeletion`)
+- DynamoDB (`createTable`, `deleteTable`)
 
 Missing a service or a certain functionality for a service? Create a [feature request](https://github.com/aws4s/aws4s/issues/new?labels=feature%20request). PRs are
 also welcome.
