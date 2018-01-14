@@ -18,8 +18,12 @@ case class ErrorResponse(status: Status, errorType: String, code: String, messag
      |  message:  $message
    """.stripMargin
     )
+
 case class UnexpectedResponse(content: String) extends Failure(s"Unexpected response: $content")
-case class InvalidParam(content:       String) extends Failure(s"Invalid param: $content")
+
+case class InvalidParam(content: String) extends Failure(s"Invalid param: $content")
+
+case class InvalidCommand(content: String) extends Failure(s"Invalid command: $content")
 
 object Failure {
 
@@ -54,12 +58,16 @@ object Failure {
     def preambled(strBody: String) = status.show |+| "\n" |+| headers.show |+| "\n\n" |+| strBody
     responseContent match {
       case XmlContent(elem)    => tryErrorResponse(status, elem).getOrElse(unexpectedResponse(preambled(elem.toString)))
+      case JsonContent(json)   => unexpectedResponse(json.spaces
+        2)
       case StringContent(text) => unexpectedResponse(preambled(text))
       case NoContent           => unexpectedResponse(preambled("[No content]"))
     }
   }
 
   private[aws4s] def invalidParam(paramName: String, cause: String): Failure = InvalidParam(s"$paramName is invalid because $cause")
+
+  private[aws4s] def invalidCommand(cause: String): Failure = InvalidCommand(cause)
 
   private implicit val showStatus: Show[Status] = Show.fromToString
 }

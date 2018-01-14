@@ -1,8 +1,10 @@
 package org.aws4s
 
 import cats.effect.Effect
+import io.circe.Json
 import org.http4s.EntityDecoder
 import org.http4s.scalaxml._
+import ExtraEntityDecoderInstances._
 
 private[aws4s] sealed trait ResponseContent {
   final def tryParse[A](pf: PartialFunction[ResponseContent, Option[A]]): Option[A] =
@@ -10,12 +12,15 @@ private[aws4s] sealed trait ResponseContent {
 }
 
 private[aws4s] case class XmlContent(elem:    scala.xml.Elem) extends ResponseContent
+private[aws4s] case class JsonContent(json:   Json) extends ResponseContent
 private[aws4s] case class StringContent(text: String) extends ResponseContent
 private[aws4s] case object NoContent extends ResponseContent
 
 private[aws4s] object ResponseContent {
+
   implicit def entityDecoder[F[_]: Effect]: EntityDecoder[F, ResponseContent] =
     EntityDecoder[F, scala.xml.Elem].map(elem => XmlContent(elem)).widen[ResponseContent] orElse
+      EntityDecoder[F, Json].map(json         => JsonContent(json)).widen[ResponseContent] orElse
       EntityDecoder[F, String].map(text       => StringContent(text)).widen[ResponseContent] orElse
       EntityDecoder[F, Unit].map(_            => NoContent).widen[ResponseContent]
 }
