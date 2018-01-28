@@ -2,6 +2,7 @@ package org.aws4s.core
 
 import org.aws4s.Failure
 
+/** A template for a command parameter that gets rendered into [[B]] */
 private[aws4s] sealed trait Param2[B] {
 
   /** Parameter name */
@@ -35,29 +36,34 @@ private[aws4s] trait PrimitiveParam[A, B] extends Param2[B] {
     validator(raw)
 }
 
-object Param2 {
-
-  /** Validator for a param's raw value. Returns an error message if the raw value is invalid. */
-  type Validator[A] = A => Option[String]
-
-  type AggregateValidator = List[Option[String]] => Option[String]
-
-  /** Renderer for a param's raw value */
-  type Renderer[A, B] = A => B
-
-  type AggregateRenderer[B, C] = List[RenderedParam[B]] => C
-}
-
 /** An aggregate param of sub-params that render as [[B]] and in aggregate is rendered as [[C]] */
 private[aws4s] trait AggregateParam[B, C] extends Param2[C] {
 
+  /** The sub parameters */
   def subParams: List[Param2[B]]
 
+  /** Top-level validator for the sub parameter validations */
   def aggregateValidator: Param2.AggregateValidator
 
+  /** Top-level renderer */
   def aggregateRenderer: Param2.AggregateRenderer[B, C]
 
   override final private[core] def rendered: RenderedParam[C] = RenderedParam(name, aggregateRenderer(subParams.map(_.rendered)))
 
   override final private[core] def validationError: Option[String] = aggregateValidator(subParams.map(_.validationError))
+}
+
+object Param2 {
+
+  /** Validator for a param's raw value. Returns an error message if the raw value is invalid. */
+  type Validator[A] = A => Option[String]
+
+  /** A validator for the validation result of sub parameters */
+  type AggregateValidator = List[Option[String]] => Option[String]
+
+  /** Renderer for a param's raw value */
+  type Renderer[A, B] = A => B
+
+  /** Renderer aggregating the rendered values of other params */
+  type AggregateRenderer[B, C] = List[RenderedParam[B]] => C
 }
