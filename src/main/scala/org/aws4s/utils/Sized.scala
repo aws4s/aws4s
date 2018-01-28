@@ -2,7 +2,6 @@ package org.aws4s.utils
 
 import cats.UnorderedFoldable
 import simulacrum.typeclass
-import scala.language.implicitConversions
 
 /** A value that has a size */
 @typeclass trait Sized[A] {
@@ -11,7 +10,9 @@ import scala.language.implicitConversions
 
 object Sized {
 
-  implicit def sizedFromFoldable[F[_]: UnorderedFoldable] =
+  import language.implicitConversions
+
+  implicit def sizedFromFoldable[F[_]: UnorderedFoldable]: Sized[F[_]] =
     instance((fa: F[_]) => UnorderedFoldable[F].size(fa))
 
   def instance[A](f: A => Long): Sized[A] = a => f(a)

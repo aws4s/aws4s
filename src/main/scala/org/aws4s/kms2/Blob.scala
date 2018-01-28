@@ -6,9 +6,9 @@ import org.aws4s.utils.Sized
 import cats.implicits._
 
 /** Because [[Array[Byte]]] has a [[io.circe.Decoder]] instance already */
-private[kms2] case class Blob(value: Array[Byte]) extends AnyVal
+case class Blob(value: Array[Byte]) extends AnyVal
 
-private[kms2] object Blob {
+object Blob {
 
   implicit val encoder: Encoder[Blob] =
     Encoder[String] contramap (blob => Base64.getEncoder.encodeToString(blob.value))

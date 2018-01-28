@@ -1,5 +1,6 @@
 package org.aws4s.kms2
 
+import io.circe.Decoder
 import org.aws4s.core.ParamValidator
 
 case class Plaintext(raw: Blob)
@@ -10,4 +11,7 @@ case class Plaintext(raw: Blob)
 
 object Plaintext {
   val name: String = "Plaintext"
+
+  implicit val decoder: Decoder[Plaintext] =
+    Decoder[Blob] map Plaintext.apply
 }

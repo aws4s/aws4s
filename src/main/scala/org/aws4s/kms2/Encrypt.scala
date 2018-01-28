@@ -12,18 +12,12 @@ private[kms2] case class Encrypt[F[_]: Effect](
     plaintext:   Plaintext,
     context:     Option[EncryptionContext],
     grantTokens: Option[GrantTokens],
-) extends KmsCommand[F, Map[String, Json]] {
+) extends KmsCommand[F, EncryptSuccess] {
 
   override def action: String = "Encrypt"
 
   override def params: List[Param2[Json]] =
-    CommandPayload.params(
-      keyId,
-      plaintext
-    )(
-      context,
-      grantTokens
-    )
+    CommandPayload.params(keyId, plaintext)(context, grantTokens)
 
   override val validator: Validator[Json] = _ => None
 }
