@@ -6,8 +6,8 @@ case class ProvisionedThroughput(writeCapacityUnits: WriteCapacityUnits, readCap
     extends DynamoDbAggregateParam(
       ProvisionedThroughput.name,
       List(readCapacityUnits, writeCapacityUnits),
+      AggregateParamValidator.all,
       AggregateParamRenderer.jsonObject,
-      AggregateParamValidator.all
     )
 
 object ProvisionedThroughput {

@@ -6,7 +6,7 @@ case class AttributeName(raw: String)
     extends DynamoDbParam[String](
       "AttributeName",
       ParamValidator.sizeInRangeInclusive(1, 255),
-      ParamRenderer.jsonPrimitive
+      ParamRenderer.json
     )
 
 object AttributeName {

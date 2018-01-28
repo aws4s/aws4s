@@ -7,8 +7,8 @@ case class AttributeDefinitions(value: NonEmptyList[AttributeDefinition])
     extends DynamoDbAggregateParam(
       AttributeDefinitions.name,
       value.toList,
-      AggregateParamRenderer.jsonArray,
-      AggregateParamValidator.all
+      AggregateParamValidator.all,
+      AggregateParamRenderer.jsonArray
     )
 
 object AttributeDefinitions {

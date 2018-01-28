@@ -7,8 +7,8 @@ case class KeySchema(elements: NonEmptyList[KeySchemaElement])
     extends DynamoDbAggregateParam(
       KeySchema.name,
       elements.toList,
+      AggregateParamValidator.sizeInRangeInclusive(1, 2),
       AggregateParamRenderer.jsonArray,
-      AggregateParamValidator.sizeInRangeInclusive(1, 2)
     )
 
 object KeySchema {
