@@ -8,6 +8,6 @@ import org.http4s.client.Client
 private[aws4s] abstract class Service2[F[_], B] {
   def client:      F[Client[F]]
   def credentials: () => Credentials
-  def run[C: EntityDecoder[F, ?]](command: Command2[F, B, C]): F[C] =
+  def run[R: EntityDecoder[F, ?]](command: Command2[F, B, R]): F[R] =
     command.run(client, credentials)
 }

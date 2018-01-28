@@ -1,10 +1,18 @@
 package org.aws4s.kms
 
-import io.circe.Encoder
+import org.aws4s.core.{AggregateParamRenderer, AggregateParamValidator}
 
-case class GrantTokens(tokens: List[String])
+case class GrantTokens(tokens: List[GrantToken])
+    extends KmsAggregateParam(
+      GrantTokens.name,
+      tokens,
+      AggregateParamValidator.and(
+        AggregateParamValidator.sizeInRangeInclusive(0, 10),
+        AggregateParamValidator.all
+      ),
+      AggregateParamRenderer.jsonArray,
+    )
 
 object GrantTokens {
-  implicit val encoder: Encoder[GrantTokens] =
-    Encoder[List[String]] contramap (_.tokens)
+  val name: String = "GrantTokens"
 }

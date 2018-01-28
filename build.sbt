@@ -23,12 +23,14 @@ enablePlugins(TutPlugin)
 val http4sVersion     = "0.18.0-M9"
 val scalatestVersion  = "3.0.4"
 val circeVersion      = "0.9.1"
+val simulacrumVersion = "0.11.0"
 
 libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-client"       % http4sVersion,
   "org.http4s"    %% "http4s-circe"        % http4sVersion,
   "org.http4s"    %% "http4s-scala-xml"    % http4sVersion,
   "io.circe"      %% "circe-core"          % circeVersion,
+  "com.github.mpilquist" %% "simulacrum" % simulacrumVersion,
   "org.scalatest" %% "scalatest"           % scalatestVersion % Test,
   "org.http4s"    %% "http4s-blaze-client" % http4sVersion % Test,
 )

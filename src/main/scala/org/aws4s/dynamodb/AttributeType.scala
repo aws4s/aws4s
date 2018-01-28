@@ -1,8 +1,12 @@
 package org.aws4s.dynamodb
 
-import org.aws4s.core.{ParamRenderer, ParamValidator}
+import org.aws4s.core.ParamValidator
 
-sealed abstract class AttributeType(val raw: String) extends DynamoDbParam[String]("AttributeType", ParamValidator.noValidation, ParamRenderer.json)
+sealed abstract class AttributeType(val raw: String)
+    extends DynamoDbParam[String](
+      "AttributeType",
+      ParamValidator.noValidation
+    )
 
 object AttributeType {
   case object String extends AttributeType("S")

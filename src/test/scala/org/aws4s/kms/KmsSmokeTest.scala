@@ -11,11 +11,11 @@ class KmsSmokeTest extends SmokeTest {
     val data = "secretdata"
 
     val all = for {
-      keyId      <- kms.createKey(Some(s"KMS smoke-test key ${ZonedDateTime.now}")) map (_.keyMetadata.keyId)
-      ciphertext <- kms.encrypt(keyId, data.getBytes) map (_.cipherText)
+      keyId      <- kms.createKey(Some(KeyDescription(s"KMS smoke-test key ${ZonedDateTime.now}"))) map (_.keyMetadata.keyId)
+      ciphertext <- kms.encrypt(keyId, Plaintext(Blob(data.getBytes))) map (_.cipherText)
       plaintext  <- kms.decrypt(ciphertext) map (_.plainText)
-      _          <- kms.scheduleKeyDeletion(keyId, Some(7))
-    } yield new String(plaintext)
+      _          <- kms.scheduleKeyDeletion(keyId, Some(PendingWindowInDays(7)))
+    } yield new String(plaintext.raw.value)
 
     all.unsafeToFuture() map (_ shouldBe data)
   }
