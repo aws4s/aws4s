@@ -1,7 +1,7 @@
 package org.aws4s.kms2
 
 import cats.effect.Effect
-import io.circe.Json
+import io.circe.{Decoder, Json}
 import org.aws4s.Region
 import org.aws4s.core.Command2.Validator
 import org.aws4s.core.{CommandPayload, Param2}
@@ -28,15 +28,13 @@ private[kms2] case class Encrypt[F[_]: Effect](
   override val validator: Validator[Json] = _ => None
 }
 
-//case class EncryptSuccess(
-//    cipherText: Ciphertext,
-//)
-//
-//object EncryptSuccess {
-//  implicit val decoder: Decoder[EncryptSuccess] =
-//    Decoder.forProduct1("CiphertextBlob") { (cipherText: String) =>
-//      EncryptSuccess(
-//        Base64.getDecoder.decode(cipherText),
-//      )
-//    }
-//}
+case class EncryptSuccess(
+    cipherText: Ciphertext,
+)
+
+object EncryptSuccess {
+  implicit val decoder: Decoder[EncryptSuccess] =
+    Decoder.forProduct1(Ciphertext.name) { (cipherText: Ciphertext) =>
+      EncryptSuccess(cipherText)
+    }
+}
