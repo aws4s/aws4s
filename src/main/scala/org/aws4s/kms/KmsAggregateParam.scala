@@ -1,10 +1,10 @@
-package org.aws4s.kms2
+package org.aws4s.kms
 
 import io.circe.Json
 import org.aws4s.core.Param2.{AggregateRenderer, AggregateValidator}
 import org.aws4s.core.{AggregateParam, Param2}
 
-private[kms2] abstract class KmsAggregateParam(
+private[kms] abstract class KmsAggregateParam(
     val name:               String,
     val subParams:          List[Param2[Json]],
     val aggregateValidator: AggregateValidator,

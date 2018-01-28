@@ -1,26 +1,25 @@
 package org.aws4s.kms
 
 import cats.effect.Effect
+import cats.implicits._
 import io.circe.{Decoder, Json}
-import org.aws4s.s3.PayloadSigning
+import org.aws4s.ExtraEntityDecoderInstances._
 import org.aws4s._
-import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
+import org.aws4s.core.{Command2, CommandPayload, RenderedParam}
+import org.aws4s.s3.PayloadSigning
 import org.http4s.circe._
 import org.http4s.headers.{Host, `Content-Type`}
-import cats.implicits._
-import ExtraEntityDecoderInstances._
+import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
 
-private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
-
+private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command2[F, Json, R] {
   override def serviceName:    ServiceName    = ServiceName.Kms
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 
   def action: String
-  def region: Region
 
-  override def generateRequest(validParams: List[Param.Rendered[Json]]): F[Request[F]] = {
+  override final val requestGenerator: List[RenderedParam[Json]] => F[Request[F]] = { params =>
     val host = s"kms.${region.name}.amazonaws.com"
-    val payload: Json = Json.obj(validParams: _*)
+    val payload: Json = CommandPayload.jsonObject(params)
     Request[F](
       Method.POST,
       Uri.unsafeFromString(s"https://$host/"),

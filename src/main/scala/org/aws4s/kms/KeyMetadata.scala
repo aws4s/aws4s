@@ -10,5 +10,5 @@ case class KeyMetadata(
 
 object KeyMetadata {
   implicit val decoder: Decoder[KeyMetadata] =
-    Decoder.forProduct2("Arn", "KeyId")(KeyMetadata.apply)
+    Decoder.forProduct2(Arn.name, KeyId.name)(KeyMetadata.apply)
 }

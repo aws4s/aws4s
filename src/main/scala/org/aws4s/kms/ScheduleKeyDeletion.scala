@@ -3,26 +3,21 @@ package org.aws4s.kms
 import java.time.Instant
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
-import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
 import org.aws4s.ExtraCirceDecoders._
+import org.aws4s.core.Command2.Validator
+import org.aws4s.core.{CommandPayload, Param2}
 
 private[kms] case class ScheduleKeyDeletion[F[_]: Effect](
     region:              Region,
-    keyId:               KeyIdParam,
-    pendingWindowInDays: Option[PendingWindowInDaysParam],
+    keyId:               KeyId,
+    pendingWindowInDays: Option[PendingWindowInDays],
 ) extends KmsCommand[F, ScheduleKeyDeletionSuccess] {
   override def action: String = "ScheduleKeyDeletion"
-  override def params: List[RenderedOptional[Json]] =
-    List(
-      Some(keyId.render),
-      pendingWindowInDays map (_.render),
-    )
-}
 
-private[kms] object ScheduleKeyDeletion {
-  case class PendingWindowInDaysParam(value: Int) extends KmsParam[Int]("PendingWindowInDays", n => if (n < 7 || n > 30) Some("not in [7,30]") else None)
+  override val validator: Validator[Json] = _ => None
+
+  override def params: List[Param2[Json]] = CommandPayload.params(keyId)(pendingWindowInDays)
 }
 
 case class ScheduleKeyDeletionSuccess(
@@ -33,7 +28,7 @@ case class ScheduleKeyDeletionSuccess(
 object ScheduleKeyDeletionSuccess {
   implicit val decoder: Decoder[ScheduleKeyDeletionSuccess] =
     Decoder.forProduct2(
-      "KeyId",
+      KeyId.name,
       "DeletionDate"
     )(ScheduleKeyDeletionSuccess.apply)
 }

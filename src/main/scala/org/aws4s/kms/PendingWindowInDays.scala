@@ -1,4 +1,4 @@
-package org.aws4s.kms2
+package org.aws4s.kms
 
 import org.aws4s.core.ParamValidator
 import cats.implicits._

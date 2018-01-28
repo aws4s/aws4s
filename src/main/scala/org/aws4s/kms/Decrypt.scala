@@ -1,35 +1,33 @@
 package org.aws4s.kms
 
-import java.util.Base64
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.Param.RenderedOptional
 import org.aws4s.Region
+import org.aws4s.core.Command2.Validator
+import org.aws4s.core.{CommandPayload, Param2}
 
 private[kms] case class Decrypt[F[_]: Effect](
     region:      Region,
-    ciphertext:  CiphertextBlobParam,
-    context:     Option[EncryptionContextParam],
-    grantTokens: Option[GrantTokensParam],
+    ciphertext:  Ciphertext,
+    context:     Option[EncryptionContext],
+    grantTokens: Option[GrantTokens],
 ) extends KmsCommand[F, DecryptSuccess] {
+
   override def action: String = "Decrypt"
-  override def params: List[RenderedOptional[Json]] =
-    List(
-      Some(ciphertext.render),
-      context map (_.render),
-      grantTokens map (_.render),
-    )
+
+  override def params: List[Param2[Json]] =
+    CommandPayload.params(ciphertext)(context, grantTokens)
+
+  override val validator: Validator[Json] = _ => None
 }
 
 case class DecryptSuccess(
-    plainText: Array[Byte],
+    plainText: Plaintext,
 )
 
 object DecryptSuccess {
   implicit val decoder: Decoder[DecryptSuccess] =
-    Decoder.forProduct1("Plaintext") { (plaintext: String) =>
-      DecryptSuccess(
-        Base64.getDecoder.decode(plaintext),
-      )
+    Decoder.forProduct1(Plaintext.name) { (plaintext: Plaintext) =>
+      DecryptSuccess(plaintext)
     }
 }

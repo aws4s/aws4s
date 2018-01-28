@@ -2,47 +2,41 @@ package org.aws4s.kms
 
 import cats.effect.Effect
 import io.circe.Json
-import org.aws4s.{Credentials, Region, Service}
-import org.http4s.client.Client
 import org.aws4s.ExtraEntityDecoderInstances._
-import org.aws4s.kms.CreateKey.DescriptionParam
-import org.aws4s.kms.ScheduleKeyDeletion.PendingWindowInDaysParam
+import org.aws4s.core.Service2
+import org.aws4s.{Credentials, Region}
+import org.http4s.client.Client
 
-case class Kms[F[_]: Effect](client: F[Client[F]], region: Region, credentials: () => Credentials) extends Service[F, Json] {
+case class Kms[F[_]: Effect](client: F[Client[F]], region: Region, credentials: () => Credentials) extends Service2[F, Json] {
 
   def encrypt(
       keyId:       KeyId,
-      plaintext:   Array[Byte],
-      context:     Option[Map[String, String]] = None,
+      plaintext:   Plaintext,
+      context:     Option[EncryptionContext] = None,
       grantTokens: Option[GrantTokens] = None,
   ): F[EncryptSuccess] = run {
     Encrypt(
       region,
-      KeyIdParam(keyId),
-      PlaintextParam(Blob(plaintext)),
-      context map EncryptionContextParam,
-      grantTokens map GrantTokensParam,
+      keyId,
+      plaintext,
+      context,
+      grantTokens
     )
   }
 
   def decrypt(
-      ciphertext:  Array[Byte],
-      context:     Option[Map[String, String]] = None,
+      ciphertext:  Ciphertext,
+      context:     Option[EncryptionContext] = None,
       grantTokens: Option[GrantTokens] = None,
   ): F[DecryptSuccess] = run {
-    Decrypt(
-      region,
-      CiphertextBlobParam(Blob(ciphertext)),
-      context map EncryptionContextParam,
-      grantTokens map GrantTokensParam,
-    )
+    Decrypt(region, ciphertext, context, grantTokens)
   }
 
-  def createKey(description: Option[String] = None): F[CreateKeySuccess] = run {
-    CreateKey(region, description map DescriptionParam.apply)
+  def createKey(description: Option[KeyDescription] = None): F[CreateKeySuccess] = run {
+    CreateKey(region, description)
   }
 
-  def scheduleKeyDeletion(keyId: KeyId, pendingWindowInDays: Option[Int] = None): F[ScheduleKeyDeletionSuccess] = run {
-    ScheduleKeyDeletion(region, KeyIdParam(keyId), pendingWindowInDays map PendingWindowInDaysParam.apply)
+  def scheduleKeyDeletion(keyId: KeyId, pendingWindowInDays: Option[PendingWindowInDays] = None): F[ScheduleKeyDeletionSuccess] = run {
+    ScheduleKeyDeletion(region, keyId, pendingWindowInDays)
   }
 }
