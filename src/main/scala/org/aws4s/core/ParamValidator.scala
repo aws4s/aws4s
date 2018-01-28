@@ -5,7 +5,7 @@ import cats.implicits._
 
 private[aws4s] object ParamValidator {
 
-  def lengthInRangeInclusive[A[_]: UnorderedFoldable](min: Int, max: Int): Param2.Validator[A[_]] =
+  def sizeInRangeInclusive[A[_]: UnorderedFoldable](min: Int, max: Int): Param2.Validator[A[_]] =
     v => if (v.size < min || v.size > max) Some(s"value size not in [$min,$max]") else None
 
   def minInclusive[A: PartialOrder](v: A): Param2.Validator[A] =
