@@ -11,10 +11,10 @@ private[aws4s] object ParamRenderer {
   def jsonPrimitive[A: Encoder]: Param2.Renderer[A, Json] = Encoder[A].apply
 
   /** Renders a list of JSON-rendered sub-parameters as a JSON array */
-  def jsonArray[F[_]: Foldable]: Param2.Renderer[F[Param2[_, Json]], Json] =
+  def jsonArray[F[_]: Foldable]: Param2.Renderer[F[PrimitiveParam[_, Json]], Json] =
     ps => Json.arr(ps.toList.map(_.rendered.value): _*)
 
   /** Renders a list of JSON-rendered sub-parameters as a JSON object */
-  def jsonObject[F[_]: Foldable]: Param2.Renderer[F[Param2[_, Json]], Json] =
+  def jsonObject[F[_]: Foldable]: Param2.Renderer[F[PrimitiveParam[_, Json]], Json] =
     ps => Json.obj(ps.toList.map(p => p.name -> p.rendered.value): _*)
 }

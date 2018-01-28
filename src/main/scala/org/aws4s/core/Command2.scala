@@ -19,7 +19,7 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] 
   /** The AWS region being addressed */
   def region: Region
 
-  def params: List[Param2[_, B]]
+  def params: List[PrimitiveParam[_, B]]
 
   val validator: Command2.Validator[B]
 
@@ -58,5 +58,5 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] 
 object Command2 {
 
   /** Validator for the command parameters as a whole */
-  type Validator[B] = List[Param2[_, B]] => Option[String]
+  type Validator[B] = List[PrimitiveParam[_, B]] => Option[String]
 }

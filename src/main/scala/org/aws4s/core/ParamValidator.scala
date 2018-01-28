@@ -14,10 +14,10 @@ private[aws4s] object ParamValidator {
 
   def noValidation[A]: Param2.Validator[A] = _ => None
 
-  def all[A]: Param2.Validator[List[Param2[A, _]]] =
+  def all[A]: Param2.Validator[List[PrimitiveParam[A, _]]] =
     _.map(p => p.validator(p.raw)).find(_.isDefined).flatten
 
-  def allNel[A]: Param2.Validator[NonEmptyList[Param2[A, _]]] =
+  def allNel[A]: Param2.Validator[NonEmptyList[PrimitiveParam[A, _]]] =
     ps => all(ps.toList)
 
   def matches(regexp: String): Param2.Validator[String] =

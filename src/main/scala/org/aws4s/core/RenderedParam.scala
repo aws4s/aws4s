@@ -1,3 +1,3 @@
 package org.aws4s.core
 
-case class RenderedParam[A](name: String, value: A)
+case class RenderedParam[B](name: String, value: B)
