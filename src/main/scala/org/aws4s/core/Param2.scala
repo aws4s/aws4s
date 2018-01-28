@@ -2,7 +2,7 @@ package org.aws4s.core
 
 import org.aws4s.Failure
 
-/** A template for a command parameter of value of type [[A]] that gets rendered into [[B]] */
+/** A template for a command parameter of raw value of type [[A]] that gets rendered into [[B]] */
 private[aws4s] abstract class Param2[A, B] {
 
   /** Parameter name */
@@ -17,10 +17,10 @@ private[aws4s] abstract class Param2[A, B] {
   /** Renderer for the parameter */
   private[aws4s] def renderer: Param2.Renderer[A, B]
 
-  private[aws4s] final lazy val rendered: RenderedParam[B] =
+  private[core] final lazy val rendered: RenderedParam[B] =
     RenderedParam(name, renderer(raw))
 
-  private[aws4s] final lazy val validationError: Option[String] =
+  private[core] final lazy val validationError: Option[String] =
     validator(raw)
 
   /** Rendered validated parameter */
@@ -30,7 +30,7 @@ private[aws4s] abstract class Param2[A, B] {
 
 object Param2 {
 
-  /** Validator for a param's raw value */
+  /** Validator for a param's raw value. Returns an error message if the raw value is invalid. */
   type Validator[A] = A => Option[String]
 
   /** Renderer for a param's raw value */
