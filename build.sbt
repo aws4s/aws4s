@@ -20,11 +20,9 @@ addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.4")
 addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
 enablePlugins(TutPlugin)
 
-val http4sVersion     = "0.18.0-M8"
-val awsSignerVersion  = "0.5.1"
-val awsSdkCoreVersion = "1.11.51"
+val http4sVersion     = "0.18.0-M9"
 val scalatestVersion  = "3.0.4"
-val circeVersion      = "0.9.0"
+val circeVersion      = "0.9.1"
 
 libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-client"       % http4sVersion,

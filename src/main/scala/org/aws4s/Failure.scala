@@ -58,8 +58,7 @@ object Failure {
     def preambled(strBody: String) = status.show |+| "\n" |+| headers.show |+| "\n\n" |+| strBody
     responseContent match {
       case XmlContent(elem)    => tryErrorResponse(status, elem).getOrElse(unexpectedResponse(preambled(elem.toString)))
-      case JsonContent(json)   => unexpectedResponse(json.spaces
-        2)
+      case JsonContent(json)   => unexpectedResponse(json.spaces2)
       case StringContent(text) => unexpectedResponse(preambled(text))
       case NoContent           => unexpectedResponse(preambled("[No content]"))
     }
