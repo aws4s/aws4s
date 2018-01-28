@@ -1,10 +1,15 @@
 package org.aws4s.dynamodb
 
-import org.aws4s.core.{ParamRenderer, ParamValidator}
-import cats.implicits._
+import org.aws4s.core.{AggregateParamRenderer, AggregateParamValidator}
 
 case class ProvisionedThroughput(writeCapacityUnits: WriteCapacityUnits, readCapacityUnits: ReadCapacityUnits)
-    extends DynamoDbParam[List[CapacityUnit]]("ProvisionedThroughput", ParamValidator.all, ParamRenderer.jsonObject[List]) {
+    extends DynamoDbAggregateParam(
+      ProvisionedThroughput.name,
+      List(readCapacityUnits, writeCapacityUnits),
+      AggregateParamRenderer.jsonObject,
+      AggregateParamValidator.all
+    )
 
-  override lazy val raw: List[CapacityUnit] = List(readCapacityUnits, writeCapacityUnits)
+object ProvisionedThroughput {
+  val name: String = "ProvisionedThroughput"
 }

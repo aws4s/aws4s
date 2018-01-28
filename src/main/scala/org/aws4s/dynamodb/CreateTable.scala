@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
 import org.aws4s.Region
-import org.aws4s.core.{Command2, PrimitiveParam}
+import org.aws4s.core.{Command2, Param2}
 
 private[dynamodb] case class CreateTable[F[_]: Effect](
     region:                Region,
@@ -15,9 +15,10 @@ private[dynamodb] case class CreateTable[F[_]: Effect](
 
   override def action: String = "CreateTable"
 
-  override def params: List[PrimitiveParam[_, Json]] = {
+  override def params: List[Param2[Json]] = {
     val attributeDefinitions = AttributeDefinitions(indices.map(ix => AttributeDefinition(ix.attributeName, ix.attributeType)))
-    val keySchema = KeySchema(indices.map(ix => KeySchemaElement(ix.attributeName, ix.keyType)))
+    val keySchema            = KeySchema(indices.map(ix            => KeySchemaElement(ix.attributeName, ix.keyType)))
+
     List(attributeDefinitions, tableName, keySchema, provisionedThroughput)
   }
 

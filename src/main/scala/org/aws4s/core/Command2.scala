@@ -7,8 +7,8 @@ import org.aws4s.s3.PayloadSigning
 import org.http4s.client.Client
 import org.http4s.{EntityDecoder, Request}
 
-/** A template for a command that has parameters rendered as [[B]] and when ran results in [[C]] */
-private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] {
+/** A template for a command that has parameters rendered as [[B]] and when ran results in [[R]] */
+private[aws4s] abstract class Command2[F[_]: Effect, B, R: EntityDecoder[F, ?]] {
 
   /** Request body signing strategy for the outgoing request */
   def payloadSigning: PayloadSigning
@@ -19,14 +19,14 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] 
   /** The AWS region being addressed */
   def region: Region
 
-  def params: List[PrimitiveParam[_, B]]
+  def params: List[Param2[B]]
 
   val validator: Command2.Validator[B]
 
-  /** Generates the HTTP request given valid redered parameters */
+  /** Generates the HTTP request given valid rendered parameters */
   val requestGenerator: List[RenderedParam[B]] => F[Request[F]]
 
-  final def run(fclient: F[Client[F]], credentials: () => Credentials): F[C] = {
+  final def run(fclient: F[Client[F]], credentials: () => Credentials): F[R] = {
     val validatedParams: Either[Failure, List[RenderedParam[B]]] =
       validator(params) match {
         case Some(err) => Either.left(Failure.invalidCommand(err))
@@ -45,10 +45,10 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] 
     (fclient, signedRequest).tupled >>= {
       case (client, r) =>
         client.fetch(r) {
-          case resp if resp.status.isSuccess => resp.as[C]
+          case resp if resp.status.isSuccess => resp.as[R]
           case resp =>
             resp.as[ResponseContent] >>= { content =>
-              Failure.badResponse(resp.status, resp.headers, content).asInstanceOf[Throwable].raiseError[F, C]
+              Failure.badResponse(resp.status, resp.headers, content).asInstanceOf[Throwable].raiseError[F, R]
             }
         }
     }
@@ -58,5 +58,5 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, C: EntityDecoder[F, ?]] 
 object Command2 {
 
   /** Validator for the command parameters as a whole */
-  type Validator[B] = List[PrimitiveParam[_, B]] => Option[String]
+  type Validator[B] = List[Param2[B]] => Option[String]
 }

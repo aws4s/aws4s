@@ -5,6 +5,6 @@ import org.aws4s.core.{PrimitiveParam, ParamRenderer, ParamValidator}
 import cats.implicits._
 
 case class KeySchemaElement(attributeName: AttributeName, keyType: KeyType)
-    extends DynamoDbParam[List[PrimitiveParam[_, Json]]]("KeySchemaElement", ParamValidator.noValidation, ParamRenderer.jsonObject[List]) {
+    extends DynamoDbParam[List[PrimitiveParam[_, Json]]]("KeySchemaElement", ParamValidator.none, ParamRenderer.jsonObject[List]) {
   override def raw: List[PrimitiveParam[_, Json]] = List(attributeName, keyType)
 }

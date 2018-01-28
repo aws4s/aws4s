@@ -1,7 +1,6 @@
 package org.aws4s.core
 
 import cats.{PartialOrder, UnorderedFoldable}
-import cats.data.NonEmptyList
 import cats.implicits._
 
 private[aws4s] object ParamValidator {
@@ -12,13 +11,7 @@ private[aws4s] object ParamValidator {
   def minInclusive[A: PartialOrder](v: A): Param2.Validator[A] =
     p => if (p >= v) None else Some(s"value is smaller than the minimum value of $v")
 
-  def noValidation[A]: Param2.Validator[A] = _ => None
-
-  def all[A]: Param2.Validator[List[PrimitiveParam[A, _]]] =
-    _.map(p => p.validator(p.raw)).find(_.isDefined).flatten
-
-  def allNel[A]: Param2.Validator[NonEmptyList[PrimitiveParam[A, _]]] =
-    ps => all(ps.toList)
+  def none[A]: Param2.Validator[A] = _ => None
 
   def matches(regexp: String): Param2.Validator[String] =
     v => if (!regexp.r.pattern.matcher(v).matches) Some(s"does not match $regexp") else None
