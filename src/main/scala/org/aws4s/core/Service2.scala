@@ -4,7 +4,7 @@ import org.aws4s.Credentials
 import org.http4s.EntityDecoder
 import org.http4s.client.Client
 
-/** An AWS service whos param values are rendered as [[B]] */
+/** An AWS service whose param values are rendered as [[B]] */
 private[aws4s] abstract class Service2[F[_], B] {
   def client:      F[Client[F]]
   def credentials: () => Credentials
