@@ -9,7 +9,7 @@ import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
 import org.http4s.circe._
 import cats.implicits._
 import org.aws4s.ExtraEntityDecoderInstances._
-import org.aws4s.core.{Command2, RenderedParam}
+import org.aws4s.core.{Command2, CommandPayload, RenderedParam}
 
 private[dynamodb] abstract class DynamoDbCommand[F[_]: Effect, R: Decoder] extends Command2[F, Json, R] {
   override def serviceName:    ServiceName    = ServiceName.DynamoDb
@@ -19,7 +19,7 @@ private[dynamodb] abstract class DynamoDbCommand[F[_]: Effect, R: Decoder] exten
 
   override final val requestGenerator: List[RenderedParam[Json]] => F[Request[F]] = params => {
     val host = s"dynamodb.${region.name}.amazonaws.com"
-    val payload: Json = Json.obj(params.map(p => (p.name, p.value)): _*)
+    val payload: Json = CommandPayload.jsonObject(params)
     Request[F](
       Method.POST,
       Uri.unsafeFromString(s"https://$host/"),

@@ -12,4 +12,8 @@ object AggregateParamValidator {
 
   def sizeInRangeInclusive[A[_]: UnorderedFoldable](min: Int, max: Int): Param2.AggregateValidator =
     v => if (v.size < min || v.size > max) Some(s"value size not in [$min,$max]") else None
+
+  /** Returns a failure if either of the operands is a failure */
+  def and(lhs: Param2.AggregateValidator, rhs: Param2.AggregateValidator): Param2.AggregateValidator =
+    rs => List(lhs(rs), rhs(rs)).find(_.isDefined).flatten
 }
