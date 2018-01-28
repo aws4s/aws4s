@@ -6,7 +6,7 @@ object AggregateParamValidator {
 
   /** Fails on the first failure */
   def all: Param2.AggregateValidator =
-    _.find(_.isEmpty).flatten
+    _.find(_.isDefined).flatten
 
   def noValidation: Param2.AggregateValidator = _ => None
 
