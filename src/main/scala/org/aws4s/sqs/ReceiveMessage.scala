@@ -3,31 +3,26 @@ package org.aws4s.sqs
 import cats.effect.Effect
 import org.http4s.EntityDecoder
 import cats.implicits._
-import org.aws4s.Param.RenderedOptional
 import org.aws4s._
+import org.aws4s.core.{CommandPayload, Param2}
 
 private[sqs] case class ReceiveMessage[F[_]: Effect](
     q:                       Queue,
-    maxNumberOfMessages:     Option[ReceiveMessage.MaxNumberOfMessagesParam],
-    visibilityTimeout:       Option[ReceiveMessage.VisibilityTimeoutParam],
-    waitTimeSeconds:         Option[ReceiveMessage.WaitTimeSecondsParam],
-    receiveRequestAttemptId: Option[ReceiveMessage.ReceiveRequestAttemptIdParam],
+    maxNumberOfMessages:     Option[MaxNumberOfMessages],
+    visibilityTimeout:       Option[VisibilityTimeout],
+    waitTimeSeconds:         Option[WaitTimeSeconds],
+    receiveRequestAttemptId: Option[ReceiveRequestAttemptId],
 ) extends SqsCommand[F, ReceiveMessageSuccess] {
-  override def action: String = "ReceiveMessage"
-  override def params: List[RenderedOptional[String]] =
-    List(
-      maxNumberOfMessages map (_.render),
-      visibilityTimeout map (_.render),
-      waitTimeSeconds map (_.render),
-      receiveRequestAttemptId map (_.render),
-    )
-}
 
-private[sqs] object ReceiveMessage {
-  case class MaxNumberOfMessagesParam(value:     Int) extends SqsParam[Int]("MaxNumberOfMessages", n                                             => if (n >= 1 && n <= 10) None else Some("not in [1,10]"))
-  case class VisibilityTimeoutParam(value:       Int) extends SqsParam[Int]("VisibilityTimeout", _                                               => None)
-  case class WaitTimeSecondsParam(value:         Int) extends SqsParam[Int]("WaitTimeSeconds", _                                                 => None)
-  case class ReceiveRequestAttemptIdParam(value: ReceiveRequestAttemptId) extends SqsParam[ReceiveRequestAttemptId]("ReceiveRequestAttemptId", _ => None)
+  override val action: String = "ReceiveMessage"
+
+  override final val params: List[Param2[String]] =
+    CommandPayload.params()(
+      maxNumberOfMessages,
+      visibilityTimeout,
+      waitTimeSeconds,
+      receiveRequestAttemptId
+    )
 }
 
 case class ReceiveMessageSuccess(

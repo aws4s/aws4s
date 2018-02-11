@@ -9,11 +9,11 @@ class SqsSmokeTest extends SmokeTest {
 
     val sqs     = Sqs(httpClient, credentials)
     val q       = Queue.unsafeFromString("https://sqs.eu-central-1.amazonaws.com/406884264568/testq") // TODO: create this queue
-    val message = "Sup"
+    val message = MessageBody("Sup")
 
     val all = for {
       _        <- sqs.sendMessage(q, message)
-      messages <- sqs.receiveMessage(q, Some(10)) map (_.messages)
+      messages <- sqs.receiveMessage(q, Some(MaxNumberOfMessages(10))) map (_.messages)
       _        <- messages.traverse(m => sqs.deleteMessage(q, m.receiptHandle))
     } yield messages
 

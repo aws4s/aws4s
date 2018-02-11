@@ -1,10 +1,10 @@
 package org.aws4s.sqs
 
 import cats.implicits._
+import org.aws4s.core.ParamValidator
 
-case class ReceiveRequestAttemptId(value: String) extends AnyVal
-
-object ReceiveRequestAttemptId {
-  implicit val paramValue: TextParamValue[ReceiveRequestAttemptId] =
-    TextParamValue[String] contramap (_.value)
-}
+case class ReceiveRequestAttemptId(raw: String)
+    extends SqsParam[String](
+      "ReceiveRequestAttemptId",
+      ParamValidator.noValidation
+    )

@@ -3,8 +3,8 @@ package org.aws4s.sqs
 import cats.implicits._
 import org.aws4s.core.ParamValidator
 
-case class ReceiptHandle(raw: String)
+case class MessageBody(raw: String)
     extends SqsParam[String](
-      "ReceiptHandle",
-      ParamValidator.noValidation
+      "MessageBody",
+      ParamValidator.sizeInRangeInclusive(0, 256)
     )
