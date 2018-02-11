@@ -3,14 +3,14 @@ package org.aws4s.kms
 import cats.effect.Effect
 import cats.implicits._
 import io.circe.{Decoder, Json}
-import org.aws4s.ExtraEntityDecoderInstances._
+import org.aws4s.core.ExtraEntityDecoderInstances._
 import org.aws4s._
-import org.aws4s.core.{Command2, CommandPayload, PayloadSigning, RenderedParam}
+import org.aws4s.core.{Command, CommandPayload, RenderedParam, ServiceName}
 import org.http4s.circe._
 import org.http4s.headers.{Host, `Content-Type`}
 import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
 
-private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command2[F, Json, R] {
+private[kms] abstract class KmsCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
   override def serviceName:    ServiceName    = ServiceName.Kms
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 

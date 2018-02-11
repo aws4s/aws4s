@@ -1,4 +1,4 @@
-package org.aws4s
+package org.aws4s.core
 
 import cats.effect.Effect
 import io.circe.Json

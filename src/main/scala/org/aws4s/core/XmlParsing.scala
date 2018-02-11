@@ -1,7 +1,7 @@
-package org.aws4s
+package org.aws4s.core
 
-import scala.annotation.tailrec
 import cats.implicits._
+import scala.annotation.tailrec
 
 private[aws4s] object XmlParsing {
 

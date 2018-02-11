@@ -1,4 +1,4 @@
-package org.aws4s.core
+package org.aws4s
 
 /** The option to sign the body payload */
 sealed trait PayloadSigning

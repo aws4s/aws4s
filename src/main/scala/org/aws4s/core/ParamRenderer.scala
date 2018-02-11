@@ -7,8 +7,8 @@ import io.circe.{Encoder, Json}
 private[aws4s] object ParamRenderer {
 
   /** Renders A as a JSON value */
-  def json[A: Encoder]: Param2.Renderer[A, Json] = Encoder[A].apply
+  def json[A: Encoder]: Param.Renderer[A, Json] = Encoder[A].apply
 
   /** Renders A as a String value */
-  def show[A: Show]: Param2.Renderer[A, String] = Show[A].show
+  def show[A: Show]: Param.Renderer[A, String] = Show[A].show
 }

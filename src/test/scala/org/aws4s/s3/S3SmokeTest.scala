@@ -1,10 +1,10 @@
 package org.aws4s.s3
 
 import cats.effect.IO
-import org.aws4s.SmokeTest
+import org.aws4s.PayloadSigning
 import fs2._
 import cats.implicits._
-import org.aws4s.core.PayloadSigning
+import org.aws4s.core.SmokeTest
 
 class S3SmokeTest extends SmokeTest {
 

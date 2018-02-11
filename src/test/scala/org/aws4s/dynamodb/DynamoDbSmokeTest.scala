@@ -1,7 +1,8 @@
 package org.aws4s.dynamodb
 
 import cats.data.NonEmptyList
-import org.aws4s.{Region, SmokeTest}
+import org.aws4s.Region
+import org.aws4s.core.SmokeTest
 
 class DynamoDbSmokeTest extends SmokeTest {
 

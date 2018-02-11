@@ -1,6 +1,7 @@
-package org.aws4s
+package org.aws4s.core
 
 import cats.effect.IO
+import org.aws4s.{Credentials, Region}
 import org.http4s.client.blaze.Http1Client
 import org.scalatest.{AsyncFlatSpec, Matchers}
 

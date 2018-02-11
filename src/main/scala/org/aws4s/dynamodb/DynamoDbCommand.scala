@@ -2,15 +2,15 @@ package org.aws4s.dynamodb
 
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
-import org.aws4s.ServiceName
+import org.aws4s.PayloadSigning
 import org.http4s.headers.{Host, `Content-Type`}
 import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
 import org.http4s.circe._
 import cats.implicits._
-import org.aws4s.ExtraEntityDecoderInstances._
-import org.aws4s.core.{Command2, CommandPayload, PayloadSigning, RenderedParam}
+import org.aws4s.core.ExtraEntityDecoderInstances._
+import org.aws4s.core.{Command, CommandPayload, RenderedParam, ServiceName}
 
-private[dynamodb] abstract class DynamoDbCommand[F[_]: Effect, R: Decoder] extends Command2[F, Json, R] {
+private[dynamodb] abstract class DynamoDbCommand[F[_]: Effect, R: Decoder] extends Command[F, Json, R] {
   override def serviceName:    ServiceName    = ServiceName.DynamoDb
   override def payloadSigning: PayloadSigning = PayloadSigning.Signed
 

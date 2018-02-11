@@ -1,4 +1,4 @@
-package org.aws4s
+package org.aws4s.core
 
 import cats.Applicative
 import cats.data.EitherT
@@ -6,8 +6,8 @@ import cats.effect.Effect
 import cats.implicits._
 import fs2.Stream
 import io.circe.Decoder
-import org.http4s.{DecodeFailure, EntityDecoder, InvalidMessageBodyFailure, MediaRange}
 import org.http4s.scalaxml._
+import org.http4s.{DecodeFailure, EntityDecoder, InvalidMessageBodyFailure, MediaRange}
 
 private[aws4s] object ExtraEntityDecoderInstances {
   implicit def streamEntityDecoder[F[_]: Applicative]: EntityDecoder[F, Stream[F, Byte]] =

@@ -1,6 +1,6 @@
 package org.aws4s.s3
 
-import org.aws4s.XmlParsing._
+import org.aws4s.core.XmlParsing._
 
 case class BucketName(value: String) extends AnyVal
 

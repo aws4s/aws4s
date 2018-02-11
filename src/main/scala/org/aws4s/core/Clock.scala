@@ -1,4 +1,4 @@
-package org.aws4s
+package org.aws4s.core
 
 import java.time.{LocalDateTime, ZoneId}
 

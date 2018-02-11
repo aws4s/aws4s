@@ -5,9 +5,9 @@ import org.http4s.EntityDecoder
 import org.http4s.client.Client
 
 /** An AWS service whose param values are rendered as [[B]] */
-private[aws4s] abstract class Service2[F[_], B] {
+private[aws4s] abstract class Service[F[_], B] {
   def client:      F[Client[F]]
   def credentials: () => Credentials
-  def run[R: EntityDecoder[F, ?]](command: Command2[F, B, R]): F[R] =
+  def run[R: EntityDecoder[F, ?]](command: Command[F, B, R]): F[R] =
     command.run(client, credentials)
 }

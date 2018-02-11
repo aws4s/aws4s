@@ -1,7 +1,7 @@
 package org.aws4s.kms
 
 import java.time.ZonedDateTime
-import org.aws4s.SmokeTest
+import org.aws4s.core.SmokeTest
 
 class KmsSmokeTest extends SmokeTest {
 
