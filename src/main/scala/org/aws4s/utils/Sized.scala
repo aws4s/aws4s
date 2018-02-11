@@ -15,5 +15,8 @@ object Sized {
   implicit def sizedFromFoldable[F[_]: UnorderedFoldable]: Sized[F[_]] =
     instance((fa: F[_]) => UnorderedFoldable[F].size(fa))
 
+  implicit val sizedString: Sized[String] =
+    instance(_.length)
+
   def instance[A](f: A => Long): Sized[A] = a => f(a)
 }

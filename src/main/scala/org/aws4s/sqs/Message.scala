@@ -7,13 +7,13 @@ case class Message(
     id:            MessageId,
     md5OfBody:     String,
     receiptHandle: ReceiptHandle,
-    body:          String,
+    body:          MessageBody,
 )
 
 object Message {
   def parse(nodes: xml.NodeSeq): Option[Message] =
     (nonEmptyText(nodes)("MessageId"), nonEmptyText(nodes)("ReceiptHandle"), nonEmptyText(nodes)("MD5OfBody")) mapN {
       (messageId: String, receiptHandle: String, md5OfBody: String) =>
-        Message(MessageId(messageId), md5OfBody, ReceiptHandle(receiptHandle), text(nodes)("Body"))
+        Message(MessageId(messageId), md5OfBody, ReceiptHandle(receiptHandle), MessageBody(text(nodes)("Body")))
     }
 }

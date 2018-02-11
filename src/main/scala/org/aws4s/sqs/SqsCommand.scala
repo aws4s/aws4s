@@ -4,21 +4,21 @@ import cats.effect.Effect
 import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s._
-import org.aws4s.core.PayloadSigning
+import org.aws4s.core.Command2.Validator
+import org.aws4s.core.{Command2, PayloadSigning, RenderedParam}
 
-private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command[F, String, R] {
+private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command2[F, String, R] {
 
-  def action: String
-  def q:      Queue
+  val q:      Queue
+  val action: String
 
-  override def generateRequest(validRenderedParams: List[Param.Rendered[String]]): F[Request[F]] = {
-    val body = validRenderedParams.foldLeft(UrlForm())((form, newPair) => form + newPair) + ("Action" -> action)
+  override final val serviceName:    ServiceName    = ServiceName.Sqs
+  override final val payloadSigning: PayloadSigning = PayloadSigning.Signed
+  override final val region: Region = q.region
+
+  override final val validator: Validator[String] = _ => None
+  override final val requestGenerator: List[RenderedParam[String]] => F[Request[F]] = { params =>
+    val body = params.map(p => (p.name, p.value)).foldLeft(UrlForm())((form, newPair) => form + newPair) + ("Action" -> action)
     Request[F](Method.POST, q.uri, headers = Headers(Host(q.host))).withBody[UrlForm](body)
   }
-
-  override def payloadSigning: PayloadSigning = PayloadSigning.Signed
-  override def serviceName:    ServiceName    = ServiceName.Sqs
-  override def region:         Region         = q.region
-
-  def params: List[Param.RenderedOptional[String]]
 }

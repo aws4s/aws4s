@@ -1,38 +1,39 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.{Credentials, Service}
+import org.aws4s.core.Service2
+import org.aws4s.Credentials
 import org.http4s.client.Client
 
-case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credentials) extends Service[F, String] {
+case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credentials) extends Service2[F, String] {
 
   def sendMessage(
       q:                      Queue,
-      messageBody:            String,
-      delaySeconds:           Option[Int] = None,
+      messageBody:            MessageBody,
+      delaySeconds:           Option[DelaySeconds] = None,
       messageDeduplicationId: Option[MessageDeduplicationId] = None
   ): F[SendMessageSuccess] = run {
     SendMessage(
       q,
-      SendMessage.MessageBodyParam(messageBody),
-      delaySeconds map SendMessage.DelaySecondsParam,
-      messageDeduplicationId map SendMessage.MessageDeduplicationIdParam,
+      messageBody,
+      delaySeconds,
+      messageDeduplicationId
     )
   }
 
   def receiveMessage(
       q:                       Queue,
-      maxNumberOfMessages:     Option[Int] = None,
-      visibilityTimeout:       Option[Int] = None,
-      waitTimeSeconds:         Option[Int] = None,
+      maxNumberOfMessages:     Option[MaxNumberOfMessages] = None,
+      visibilityTimeout:       Option[VisibilityTimeout] = None,
+      waitTimeSeconds:         Option[WaitTimeSeconds] = None,
       receiveRequestAttemptId: Option[ReceiveRequestAttemptId] = None,
   ): F[ReceiveMessageSuccess] = run {
     ReceiveMessage(
       q,
-      maxNumberOfMessages map ReceiveMessage.MaxNumberOfMessagesParam,
-      visibilityTimeout map ReceiveMessage.VisibilityTimeoutParam,
-      waitTimeSeconds map ReceiveMessage.WaitTimeSecondsParam,
-      receiveRequestAttemptId map ReceiveMessage.ReceiveRequestAttemptIdParam,
+      maxNumberOfMessages,
+      visibilityTimeout,
+      waitTimeSeconds,
+      receiveRequestAttemptId
     )
   }
 
@@ -42,7 +43,7 @@ case class Sqs[F[_]: Effect](client: F[Client[F]], credentials: () => Credential
   ): F[Unit] = run {
     DeleteMessage(
       q,
-      DeleteMessage.ReceiptHandleParam(receiptHandle),
+      receiptHandle
     )
   }
 }

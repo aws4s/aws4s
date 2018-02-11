@@ -1,19 +1,15 @@
 package org.aws4s.sqs
 
 import cats.effect.Effect
-import org.aws4s.Param.RenderedOptional
+import org.aws4s.core.{CommandPayload, Param2}
 
 private[sqs] case class DeleteMessage[F[_]: Effect](
     q:             Queue,
-    receiptHandle: DeleteMessage.ReceiptHandleParam
+    receiptHandle: ReceiptHandle
 ) extends SqsCommand[F, Unit] {
-  override val action = "DeleteMessage"
-  override def params: List[RenderedOptional[String]] =
-    List(
-      Some(receiptHandle.render),
-    )
-}
 
-private[sqs] object DeleteMessage {
-  case class ReceiptHandleParam(value: ReceiptHandle) extends SqsParam[ReceiptHandle]("ReceiptHandle", _ => None)
+  override val action = "DeleteMessage"
+
+  override val params: List[Param2[String]] =
+    CommandPayload.params(receiptHandle)()
 }
