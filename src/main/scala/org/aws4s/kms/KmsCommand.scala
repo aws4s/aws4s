@@ -5,8 +5,7 @@ import cats.implicits._
 import io.circe.{Decoder, Json}
 import org.aws4s.ExtraEntityDecoderInstances._
 import org.aws4s._
-import org.aws4s.core.{Command2, CommandPayload, RenderedParam}
-import org.aws4s.s3.PayloadSigning
+import org.aws4s.core.{Command2, CommandPayload, PayloadSigning, RenderedParam}
 import org.http4s.circe._
 import org.http4s.headers.{Host, `Content-Type`}
 import org.http4s.{Header, Headers, MediaType, Method, Request, Uri}
