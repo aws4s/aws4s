@@ -7,7 +7,7 @@ import org.http4s.client.Client
 import org.http4s.{EntityDecoder, Request}
 
 /** A template for a command that has parameters rendered as [[B]] and when ran results in [[R]] */
-private[aws4s] abstract class Command2[F[_]: Effect, B, R: EntityDecoder[F, ?]] {
+private[aws4s] abstract class Command[F[_]: Effect, B, R: EntityDecoder[F, ?]] {
 
   /** Request body signing strategy for the outgoing request */
   def payloadSigning: PayloadSigning
@@ -18,9 +18,9 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, R: EntityDecoder[F, ?]] 
   /** The AWS region being addressed */
   def region: Region
 
-  def params: List[Param2[B]]
+  def params: List[Param[B]]
 
-  val validator: Command2.Validator[B]
+  val validator: Command.Validator[B]
 
   /** Generates the HTTP request given valid rendered parameters */
   val requestGenerator: List[RenderedParam[B]] => F[Request[F]]
@@ -54,8 +54,8 @@ private[aws4s] abstract class Command2[F[_]: Effect, B, R: EntityDecoder[F, ?]] 
   }
 }
 
-object Command2 {
+object Command {
 
   /** Validator for the command parameters as a whole */
-  type Validator[B] = List[Param2[B]] => Option[String]
+  type Validator[B] = List[Param[B]] => Option[String]
 }

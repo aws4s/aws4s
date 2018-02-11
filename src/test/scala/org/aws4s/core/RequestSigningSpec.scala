@@ -1,10 +1,10 @@
-package org.aws4s
+package org.aws4s.core
 
 import java.lang.String._
 import java.time.LocalDateTime
-import fs2.Stream
 import cats.effect.IO
-import org.aws4s.core.PayloadSigning
+import fs2.Stream
+import org.aws4s.{Credentials, PayloadSigning, Region}
 import org.http4s.headers.Authorization
 import org.http4s.util.CaseInsensitiveString
 import org.http4s.{Header, Headers, Method}

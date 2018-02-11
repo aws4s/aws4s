@@ -4,9 +4,9 @@ import java.time.Instant
 import cats.effect.Effect
 import io.circe.{Decoder, Json}
 import org.aws4s.Region
-import org.aws4s.ExtraCirceDecoders._
-import org.aws4s.core.Command2.Validator
-import org.aws4s.core.{CommandPayload, Param2}
+import org.aws4s.core.ExtraCirceDecoders._
+import org.aws4s.core.Command.Validator
+import org.aws4s.core.{CommandPayload, Param}
 
 private[kms] case class ScheduleKeyDeletion[F[_]: Effect](
     region:              Region,
@@ -17,7 +17,7 @@ private[kms] case class ScheduleKeyDeletion[F[_]: Effect](
 
   override val validator: Validator[Json] = _ => None
 
-  override def params: List[Param2[Json]] = CommandPayload.params(keyId)(pendingWindowInDays)
+  override def params: List[Param[Json]] = CommandPayload.params(keyId)(pendingWindowInDays)
 }
 
 case class ScheduleKeyDeletionSuccess(

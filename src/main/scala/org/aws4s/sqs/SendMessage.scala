@@ -2,9 +2,8 @@ package org.aws4s.sqs
 
 import cats.effect.Effect
 import org.http4s.EntityDecoder
-import org.aws4s._
-import org.aws4s.XmlParsing._
-import org.aws4s.core.{CommandPayload, Param2}
+import org.aws4s.core.XmlParsing._
+import org.aws4s.core.{CommandPayload, ExtraEntityDecoderInstances, Param}
 
 private[sqs] case class SendMessage[F[_]: Effect](
     q:                      Queue,
@@ -15,7 +14,7 @@ private[sqs] case class SendMessage[F[_]: Effect](
 
   override val action: String = "SendMessage"
 
-  override def params: List[Param2[String]] =
+  override def params: List[Param[String]] =
     CommandPayload.params(
       messageBody
     )(

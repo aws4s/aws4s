@@ -4,10 +4,10 @@ import cats.effect.Effect
 import org.http4s.headers.Host
 import org.http4s.{EntityDecoder, Headers, Method, Request, UrlForm}
 import org.aws4s._
-import org.aws4s.core.Command2.Validator
-import org.aws4s.core.{Command2, PayloadSigning, RenderedParam}
+import org.aws4s.core.Command.Validator
+import org.aws4s.core.{Command, RenderedParam, ServiceName}
 
-private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command2[F, String, R] {
+private[sqs] abstract class SqsCommand[F[_]: Effect, R: EntityDecoder[F, ?]] extends Command[F, String, R] {
 
   val q:      Queue
   val action: String

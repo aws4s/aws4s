@@ -4,10 +4,10 @@ import cats.effect.Effect
 import org.aws4s._
 import org.http4s.client.Client
 import fs2.Stream
-import ExtraEntityDecoderInstances._
-import org.aws4s.core.{PayloadSigning, Service2}
+import org.aws4s.core.ExtraEntityDecoderInstances._
+import org.aws4s.core.Service
 
-case class S3[F[_]: Effect](client: F[Client[F]], region: Region, credentials: () => Credentials) extends Service2[F, Nothing] {
+case class S3[F[_]: Effect](client: F[Client[F]], region: Region, credentials: () => Credentials) extends Service[F, Nothing] {
 
   val listBuckets: F[ListBucketsSuccess] = run {
     ListBuckets(region)

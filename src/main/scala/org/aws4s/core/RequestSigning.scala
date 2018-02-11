@@ -1,4 +1,4 @@
-package org.aws4s
+package org.aws4s.core
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -7,12 +7,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import cats.implicits._
 import cats.effect.Sync
-import org.http4s.{Header, Headers, Method, Request, Uri}
+import cats.implicits._
 import fs2.Stream
-import org.aws4s.core.PayloadSigning
+import org.aws4s._
 import org.http4s.headers.{Authorization, Date}
+import org.http4s.{Header, Headers, Method, Request, Uri}
 
 /**
   * Based on https://github.com/ticofab/aws-request-signer,

@@ -9,6 +9,6 @@ private[aws4s] object CommandPayload {
   def jsonObject(params: List[RenderedParam[Json]]) =
     Json.obj(params.map(p => (p.name, p.value)): _*)
 
-  def params[B](required: Param2[B]*)(optional: Option[Param2[B]]*): List[Param2[B]] =
+  def params[B](required: Param[B]*)(optional: Option[Param[B]]*): List[Param[B]] =
     required.toList |+| optional.toList.flatMap(_.toList)
 }

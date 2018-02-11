@@ -2,6 +2,7 @@ package org.aws4s
 
 import cats.Show
 import cats.implicits._
+import org.aws4s.core._
 import org.http4s.{Headers, Status}
 
 abstract class Failure(message: String) extends RuntimeException(message) {

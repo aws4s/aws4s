@@ -5,6 +5,7 @@ import org.aws4s._
 import org.http4s.{EntityDecoder, Method}
 import cats.implicits._
 import fs2.Stream
+import org.aws4s.core.ExtraEntityDecoderInstances
 
 private[s3] case class ListBuckets[F[_]: Effect](
     region: Region

@@ -3,7 +3,7 @@ package org.aws4s.core
 import org.aws4s.Failure
 
 /** A template for a command parameter that gets rendered into [[B]] */
-private[aws4s] sealed trait Param2[B] {
+private[aws4s] sealed trait Param[B] {
 
   /** Parameter name */
   def name: String
@@ -18,16 +18,16 @@ private[aws4s] sealed trait Param2[B] {
 }
 
 /** A template for a command parameter of raw value of type [[A]] that gets rendered into [[B]] */
-private[aws4s] trait PrimitiveParam[A, B] extends Param2[B] {
+private[aws4s] trait PrimitiveParam[A, B] extends Param[B] {
 
   /** Raw unvalidated value */
   def raw: A
 
   /** Validator for the parameter */
-  private[aws4s] def validator: Param2.Validator[A]
+  private[aws4s] def validator: Param.Validator[A]
 
   /** Renderer for the parameter */
-  private[aws4s] def renderer: Param2.Renderer[A, B]
+  private[aws4s] def renderer: Param.Renderer[A, B]
 
   override private[core] final lazy val rendered: RenderedParam[B] =
     RenderedParam(name, renderer(raw))
@@ -37,23 +37,23 @@ private[aws4s] trait PrimitiveParam[A, B] extends Param2[B] {
 }
 
 /** An aggregate param of sub-params that render as [[B]] and in aggregate is rendered as [[C]] */
-private[aws4s] trait AggregateParam[B, C] extends Param2[C] {
+private[aws4s] trait AggregateParam[B, C] extends Param[C] {
 
   /** The sub parameters */
-  def subParams: List[Param2[B]]
+  def subParams: List[Param[B]]
 
   /** Top-level validator for the sub parameter validations */
-  def aggregateValidator: Param2.AggregateValidator
+  def aggregateValidator: Param.AggregateValidator
 
   /** Top-level renderer */
-  def aggregateRenderer: Param2.AggregateRenderer[B, C]
+  def aggregateRenderer: Param.AggregateRenderer[B, C]
 
   override final private[core] def rendered: RenderedParam[C] = RenderedParam(name, aggregateRenderer(subParams.map(_.rendered)))
 
   override final private[core] def validationError: Option[String] = aggregateValidator(subParams.map(_.validationError))
 }
 
-object Param2 {
+object Param {
 
   /** Validator for a param's raw value. Returns an error message if the raw value is invalid. */
   type Validator[A] = A => Option[String]

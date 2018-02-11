@@ -1,10 +1,9 @@
 package org.aws4s.s3
 
 import cats.effect.Effect
-import org.aws4s._
+import org.aws4s.{PayloadSigning, _}
 import fs2.Stream
-import ExtraEntityDecoderInstances._
-import org.aws4s.core.PayloadSigning
+import org.aws4s.core.ExtraEntityDecoderInstances._
 import org.http4s.Method
 import cats.implicits._
 

@@ -1,7 +1,7 @@
 package org.aws4s.sqs
 
-import org.aws4s.SmokeTest
 import cats.implicits._
+import org.aws4s.core.SmokeTest
 
 class SqsSmokeTest extends SmokeTest {
 
