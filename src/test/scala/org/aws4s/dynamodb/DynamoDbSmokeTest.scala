@@ -18,7 +18,7 @@ class DynamoDbSmokeTest extends SmokeTest {
   }
 
   "Table deletion" should "succeed" in {
-    val tableName             = TableName("secret_table_fur_mich")
+    val tableName = TableName("secret_table_fur_mich")
 
     val action = dynamodb.deleteTable(tableName)
 
