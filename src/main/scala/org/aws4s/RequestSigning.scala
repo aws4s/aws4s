@@ -11,7 +11,7 @@ import cats.implicits._
 import cats.effect.Sync
 import org.http4s.{Header, Headers, Method, Request, Uri}
 import fs2.Stream
-import org.aws4s.s3.PayloadSigning
+import org.aws4s.core.PayloadSigning
 import org.http4s.headers.{Authorization, Date}
 
 /**

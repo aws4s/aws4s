@@ -1,9 +1,9 @@
 package org.aws4s
 
 import cats.effect.Effect
-import org.aws4s.s3.PayloadSigning
 import org.http4s.{EntityDecoder, Request}
 import cats.implicits._
+import org.aws4s.core.PayloadSigning
 import org.http4s.client.Client
 
 /** An AWS command that has parameter values rendered as [[A]] and when ran results in [[R]] */

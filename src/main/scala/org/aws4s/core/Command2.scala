@@ -3,7 +3,6 @@ package org.aws4s.core
 import cats.effect.Effect
 import cats.implicits._
 import org.aws4s._
-import org.aws4s.s3.PayloadSigning
 import org.http4s.client.Client
 import org.http4s.{EntityDecoder, Request}
 
