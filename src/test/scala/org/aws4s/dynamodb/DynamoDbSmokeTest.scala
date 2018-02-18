@@ -15,7 +15,14 @@ class DynamoDbSmokeTest extends SmokeTest {
 
     val action = dynamodb.createTable(tableName, indices, provisionedThroughput)
 
-    action.unsafeToFuture().map(_ shouldEqual CreateTableSuccess(TableDescription(tableName)))
+    action.attempt.unsafeToFuture().map {
+      case Left(err) =>
+        if (err.toString.contains("Table already exists"))
+          succeed
+        else
+          fail(err.toString)
+      case Right(cs) => cs shouldEqual CreateTableSuccess(TableDescription(tableName))
+    }
   }
 
   "Table deletion" should "succeed" in {
@@ -23,6 +30,13 @@ class DynamoDbSmokeTest extends SmokeTest {
 
     val action = dynamodb.deleteTable(tableName)
 
-    action.unsafeToFuture().map(_ shouldEqual DeleteTableSuccess(TableDescription(tableName)))
+    action.attempt.unsafeToFuture().map {
+      case Left(err) =>
+        if (err.toString.contains("Attempt to change a resource which is still in use"))
+          succeed
+        else
+          fail(err.toString)
+      case Right(ds) => ds shouldEqual DeleteTableSuccess(TableDescription(tableName))
+    }
   }
 }
