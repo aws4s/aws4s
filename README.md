@@ -25,7 +25,7 @@ also welcome.
 ```scala
 import cats.effect.IO
 import org.aws4s.Credentials
-import org.aws4s.sqs.{Queue, Sqs}
+import org.aws4s.sqs.{DelaySeconds, MessageBody, Queue, Sqs}
 import org.http4s.client.blaze.Http1Client // You'll need the `http4s-blaze-client` dependency for that
 
 val credentials = () => Credentials("ACCESS_KEY_HERE", "SECRET_KEY_HERE")
@@ -37,7 +37,7 @@ val queueUrl = "https://sqs.eu-central-1.amazonaws.com/FAKE_QUEUE_URL"
 val q = Queue.unsafeFromString(queueUrl)
 
 val action: IO[Unit] =
-  sqs.sendMessage(q, "Yo!", delaySeconds = Some(5))
+  sqs.sendMessage(q, MessageBody("Yo!"), Some(DelaySeconds(5)))
     .attempt
     .map {
       case Left(err) => System.err.println(err)
