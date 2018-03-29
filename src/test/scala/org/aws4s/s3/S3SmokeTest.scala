@@ -11,7 +11,7 @@ class S3SmokeTest extends SmokeTest {
   "Essential object functionality" should "be alright" in {
 
     val s3      = S3(httpClient, region, credentials)
-    val data    = "dump"
+    val data    = List.fill(256*11)("data").combineAll  // 11 KB of data
     val bucket  = BucketName("aws4s-smoketest") // TODO: create this bucket
     val objPath = ObjectPath("/dump/data")
     val obj     = IO(Stream.eval(IO(data.getBytes.iterator)) >>= (Stream.fromIterator[IO, Byte](_)))
