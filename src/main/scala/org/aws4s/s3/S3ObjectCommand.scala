@@ -22,8 +22,10 @@ private[aws4s] abstract class S3ObjectCommand[F[_]: Effect, R: EntityDecoder[F, 
   override final val requestGenerator: List[RenderedParam[Nothing]] => F[Request[F]] = { _ =>
     val host = s"${bucketName.value}.s3.${region.name}.amazonaws.com"
     val uri  = Uri.unsafeFromString(s"https://$host/").withPath(objectPath.value)
-    payload map { p =>
-      Request[F](action, uri, headers = Headers(Host(host))).withBodyStream(p)
-    }
+    for {
+      pStream <- payload
+      pBytes <- pStream.compile.toVector
+      r <- Request[F](action, uri, headers = Headers(Host(host))).withBody(pBytes.toArray)
+    } yield r
   }
 }
