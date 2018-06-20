@@ -10,6 +10,12 @@ private[aws4s] object ParamValidator {
   def sizeInRangeInclusive[A: Sized](min: Int, max: Int): Param.Validator[A] =
     v => if (v.size < min || v.size > max) Some(s"value size not in [$min,$max]") else None
 
+  def byteSizeInRangeInclusive(min: Int, max: Int): Param.Validator[String] =
+    v => {
+      val bytes = v.getBytes
+      if (bytes.size < min || bytes.size > max) Some(s"value byte size not in [$min,$max]") else None
+    }
+
   def inRangeInclusive[A: PartialOrder](min: A, max: A): Param.Validator[A] =
     v => if (v < min || v > max) Some(s"value not in [$min,$max]") else None
 

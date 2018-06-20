@@ -6,5 +6,5 @@ import org.aws4s.core.ParamValidator
 case class MessageBody(raw: String)
     extends SqsParam[String](
       "MessageBody",
-      ParamValidator.sizeInRangeInclusive(0, 256)
+      ParamValidator.byteSizeInRangeInclusive(1, 262144 /* 256 KiB */)
     )
